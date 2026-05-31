@@ -1,0 +1,434 @@
+:root {
+  --primary: #1e3a8a;
+  --card: #4868c0;
+  --success: #27ae60;
+  --warning: #e67e22;
+  --danger: #e74c3c;
+  --info: #3498db;
+  --bg-page: #f5f7fa;
+  --text-primary: #2c3e50;
+  --tabs: #3858bf;
+  --tree-checkbox:#6177c1;
+  --card-item: #6480cd;
+}
+h2 {
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  color: var(--text-primary);
+}
+
+.title {
+  font-size: 18px;
+  letter-spacing: 1.3px;
+  color: #000;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.el-form-item__error {
+  line-height: 0 !important;
+  padding-top: 10px !important;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+/* 隐藏滚动条，但保留滚动效果 */
+.el-menu--vertical .el-menu--popup::-webkit-scrollbar {
+  display: none;
+}
+
+/* 侧栏子菜单 Popper 挂在 body 上，需全局样式与侧栏主色一致（避免默认白底） */
+.hotel-sidebar-menu-popper.el-menu--popup-container {
+  background-color: var(--primary) !important;
+}
+
+.hotel-sidebar-menu-popper .el-menu--popup {
+  background-color: var(--primary) !important;
+}
+
+.hotel-sidebar-menu-popper .el-menu-item {
+  background-color: transparent !important;
+  color: #fff !important;
+}
+
+.hotel-sidebar-menu-popper .el-menu-item:hover {
+  background-color: #3858bf !important;
+}
+
+.hotel-sidebar-menu-popper .el-menu-item.is-active {
+  background-color: var(--info) !important;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+/* 全局样式文件 */
+#nprogress .bar {
+  background: linear-gradient(90deg, var(--bg-page), var(--info));
+  height: 4px;
+  box-shadow: 0 0 5px rgba(188, 107, 255, 0.5);
+  transition: width 0.2s ease;
+}
+
+/* 去除微调圈 */
+#nprogress .spinner {
+  display: none !important;
+}
+
+/* 修改微调圈样式（如需保留） */
+#nprogress .spinner-icon {
+  border-top-color: #ff6b6b;
+  border-left-color: #ff6b6b;
+}
+
+.menu-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.menu-title_child {
+  font-size: 14px;
+  span {
+    font-size: 12px;
+    color: #ccc;
+    margin-left: 10px;
+  }
+}
+
+.el-drawer__body {
+  padding: 16px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.el-drawer__body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+
+
+
+// 自定义 checkbox 选中颜色为紫色
+  .el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: var(--tree-checkbox) !important;
+    border-color:  var(--tree-checkbox) !important;
+  }
+
+  .el-checkbox__input.is-checked + .el-checkbox__label {
+    color:  var(--tree-checkbox) !important;
+  }
+
+  // 悬停效果
+  .el-checkbox__input:hover .el-checkbox__inner {
+    border-color: var(--tree-checkbox) !important;
+  }
+
+  // 半选状态
+  .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    background-color:  var(--tree-checkbox) !important;
+    border-color: #667eea !important;
+  }
+
+  // 聚焦效果（可选）
+  .el-checkbox__input.is-focus .el-checkbox__inner {
+    border-color:  var(--tree-checkbox)!important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  }
+
+// ============================================
+// 统一 el-button 样式
+// ============================================
+
+// 主按钮样式
+.el-button--primary {
+  background-color: var(--tabs) !important;
+  border-color: var(--tabs) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    background-color: var(--card) !important;
+    border-color: var(--card) !important;
+    box-shadow: 0 4px 12px rgba(56, 88, 191, 0.3) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  &:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 6px rgba(56, 88, 191, 0.2) !important;
+  }
+}
+
+// 默认按钮样式
+.el-button--default {
+  background-color: #fff !important;
+  border-color: var(--tabs) !important;
+  color: var(--tabs) !important;
+  border-radius: 6px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    background-color: rgba(56, 88, 191, 0.1) !important;
+    border-color: var(--card) !important;
+    color: var(--card) !important;
+  }
+  
+  &:active {
+    background-color: rgba(56, 88, 191, 0.15) !important;
+  }
+}
+
+// 成功按钮样式
+.el-button--success {
+  background-color: var(--success) !important;
+  border-color: var(--success) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    background-color: #1e8449 !important;
+    border-color: #1e8449 !important;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3) !important;
+  }
+}
+
+// 警告按钮样式
+.el-button--warning {
+  background-color: var(--warning) !important;
+  border-color: var(--warning) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    background-color: #d35400 !important;
+    border-color: #d35400 !important;
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3) !important;
+  }
+}
+
+// 危险按钮样式
+.el-button--danger {
+  background-color: var(--danger) !important;
+  border-color: var(--danger) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    background-color: #c0392b !important;
+    border-color: #c0392b !important;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3) !important;
+  }
+}
+
+// 小型按钮样式
+.el-button--small {
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  border-radius: 4px !important;
+}
+
+// 文字按钮样式
+.el-button--text {
+  color: var(--tabs) !important;
+  
+  &:hover {
+    color: var(--card) !important;
+    background-color: rgba(56, 88, 191, 0.1) !important;
+  }
+}
+
+// 禁用状态
+.el-button.is-disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// ============================================
+// 通用动画效果
+// ============================================
+
+// 淡入动画
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// 弹入动画
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bounce-in {
+  animation: bounceIn 0.3s ease-out;
+}
+
+// 旋转加载动画
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+// ============================================
+// 通用布局样式
+// ============================================
+
+// 卡片阴影
+.card-shadow {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+// 圆角容器
+.rounded-container {
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px;
+}
+
+// 弹性布局
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+// 文本截断
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ============================================
+// 自定义滚动条
+// ============================================
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+  
+  &:hover {
+    background: #a8a8a8;
+  }
+}
+
+// ============================================
+// 状态标签样式
+// ============================================
+
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &.status-success {
+    background: rgba(103, 194, 54, 0.1);
+    color: #67c23a;
+  }
+  
+  &.status-danger {
+    background: rgba(245, 108, 108, 0.1);
+    color: #f56c6c;
+  }
+  
+  &.status-warning {
+    background: rgba(250, 173, 20, 0.1);
+    color: #e6a23c;
+  }
+  
+  &.status-info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #409eff;
+  }
+}

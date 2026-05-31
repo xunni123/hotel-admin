@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xunni.hotel.web.mapper.RoomMapper">
+
+    <select id="selectRoomList" resultType="com.xunni.hotel.web.dto.RoomDoto">
+        SELECT DISTINCT
+            r.room_id as roomId,
+            r.room_number as roomNumber,
+            b.building_name as building,
+            f.floor_name as floor,
+            rt.type_name as roomType,
+            r.status,
+            rs.status_name as statusName,
+            rs.status_color as statusColor,
+            CASE WHEN rt.price IS NOT NULL THEN rt.price ELSE NULL END as price,
+            rt.max_guests AS capacity,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'checked_in')
+                 THEN COALESCE(o.adults + o.children, 0) ELSE 0 END as currentGuests,
+            o.order_id as orderId,
+            o.order_no as orderNo,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.guest_name ELSE NULL END as guestName,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.guest_phone ELSE NULL END as guestPhone,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.id_card ELSE NULL END as idCard,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.check_in_date ELSE NULL END as checkInTime,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.check_out_date ELSE NULL END as checkOutTime,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.nights ELSE NULL END as nights,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.total_amount ELSE NULL END as totalAmount,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.order_status ELSE NULL END as orderStatus,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.payment_status ELSE NULL END as paymentStatus,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.payment_method ELSE NULL END as paymentMethod,
+            CASE WHEN r.status IN ('occupied_clean', 'occupied_dirty', 'occupied', 'checked_in')
+                 THEN o.book_channel ELSE NULL END as bookChannel
+        FROM room r
+        LEFT JOIN building b ON r.building_id = b.building_id
+        LEFT JOIN floor f ON r.floor_id = f.floor_id
+        LEFT JOIN room_type rt ON r.type_id = rt.type_id
+        LEFT JOIN room_status rs ON r.status = rs.status_code
+        LEFT JOIN orders o ON r.room_id = o.room_id
+        <where>
+            <!-- 1. 搜索文本：房号 / 订单号 / 手机号 -->
+            <if test="query.searchText != null and query.searchText != ''">
+                AND ( r.room_number LIKE CONCAT('%', #{query.searchText}, '%')
+                OR o.order_no LIKE CONCAT('%', #{query.searchText}, '%')
+                OR o.guest_phone LIKE CONCAT('%', #{query.searchText}, '%') )
+            </if>
+
+            <!-- 2. 位置筛选 -->
+            <if test="query.building != null and query.building != ''">
+                AND b.building_id = #{query.building}
+            </if>
+            <if test="query.floor != null and query.floor != ''">
+                AND f.floor_number = #{query.floor}
+            </if>
+            <if test="query.roomType != null and query.roomType != ''">
+                AND rt.type_name = #{query.roomType}
+            </if>
+            <!-- 设施（数组）示例：假设 features 存储为逗号分隔字符串，且前端传入的数组需逐个匹配 -->
+            <if test="query.features != null and query.features.length > 0">
+                AND
+                <foreach collection="query.features" item="feature" open="(" separator=" AND " close=")">
+                    FIND_IN_SET(#{feature}, r.features) > 0
+                </foreach>
+            </if>
+
+            <!-- 3. 房间状态 -->
+            <if test="query.idle == true or query.dirty == true or query.repair == true or query.booked == true or query.checkedIn == true or query.locked == true or query.selfUse == true or query.todayCheckout == true">
+                <if test="!(query.idle == true and query.dirty == true and query.repair == true and query.booked == true and query.checkedIn == true and query.locked == true and query.selfUse == true and query.todayCheckout == true)">
+                    AND (
+                        <if test="query.idle != null and query.idle == true">r.status = 'empty_clean' OR r.status = 'free' OR r.status = 'available' OR</if>
+                        <if test="query.dirty != null and query.dirty == true">r.status = 'empty_dirty' OR</if>
+                        <if test="query.repair != null and query.repair == true">r.status = 'maintenance' OR</if>
+                        <if test="query.locked != null and query.locked == true">r.status = 'locked' OR</if>
+                        <if test="query.selfUse != null and query.selfUse == true">r.status = 'self_use' OR</if>
+                        <if test="query.booked != null and query.booked == true">EXISTS (SELECT 1 FROM orders o2 WHERE o2.room_id = r.room_id AND o2.order_status = 'reserved') OR</if>
+                        <if test="query.checkedIn != null and query.checkedIn == true">r.status = 'occupied_clean' OR r.status = 'occupied_dirty' OR r.status = 'occupied' OR r.status = 'checked_in' OR</if>
+                        <if test="query.todayCheckout != null and query.todayCheckout == true">EXISTS (SELECT 1 FROM orders o2 WHERE o2.room_id = r.room_id AND o2.order_status = 'checked_in' AND o2.check_out_date = CURDATE()) OR</if>
+                        1=0
+                    )
+                </if>
+            </if>
+
+            <!-- 4. 订单筛选 -->
+            <if test="query.checkinType != null and query.checkinType != ''">
+                AND o.check_in_type = #{query.checkinType}
+            </if>
+            <if test="query.channel != null and query.channel != ''">
+                AND o.book_channel = #{query.channel}
+            </if>
+            <!-- 特殊标签（数组）处理方式类似 features -->
+            <if test="query.specialTags != null and query.specialTags.length > 0">
+                AND
+                <foreach collection="query.specialTags" item="tag" open="(" separator=" AND " close=")">
+                    FIND_IN_SET(#{tag}, o.special_tags) > 0
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!-- 退房：更新订单状态和房间状态 -->
+    <update id="checkoutRoom">
+        UPDATE orders SET 
+        order_status = 'checked_out'
+        <if test="remark != null">, remarks = #{remark}</if>
+        WHERE order_id = #{orderId}
+    </update>
+
+    <!-- 更新房间状态为空房 -->
+    <update id="updateRoomStatusToClean">
+        UPDATE room SET status = 'empty_clean' WHERE room_id = #{roomId}
+    </update>
+</mapper>
