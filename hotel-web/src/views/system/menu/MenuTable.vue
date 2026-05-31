@@ -159,7 +159,7 @@ const tableOptions: Table[] = [
   { label: '菜单图标', prop: 'icon', align: 'center' },
   { label: '排序', prop: 'sort_order', align: 'center' },
   { label: '状态', prop: 'status', align: 'center' },
-  { label: '操作', prop: 'actions', align: 'center', actions: true },
+  { label: '操作', prop: 'actions', align: 'center', actions: true,width:'250px' },
 ]
 
 const drawerVisible = ref(false)

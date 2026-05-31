@@ -1,16 +1,22 @@
 <template>
   <div class="welcome-card">
-    <div class="welcome-text">
-      <h2>欢迎回来，{{ username }}</h2>
-      <p>{{ greeting }}，今天是{{ formatDate }}，祝您工作愉快！</p>
-    </div>
+    <template v-if="loading">
+      <MySkeleton width="60%" height="16px" :inline="true" />
+    </template>
 
-    <div class="weather-info" v-if="weatherData">
-      <span class="weather-temp">{{ weatherData.temp }}℃</span>
-      <span class="weather-desc">{{ weatherData.text }}</span>
-    </div>
-    <!-- 请求失败展示 -->
-    <div class="weather-info" v-else>加载天气中...</div>
+    <template v-else>
+      <div class="welcome-text">
+        <h2>欢迎回来，{{ username }}</h2>
+        <p>{{ greeting }}，今天是{{ formatDate }}，祝您工作愉快！</p>
+      </div>
+
+      <div class="weather-info" v-if="weatherData">
+        <span class="weather-temp">{{ weatherData.temp }}℃</span>
+        <span class="weather-desc">{{ weatherData.text }}</span>
+      </div>
+      <!-- error -->
+      <div class="weather-info" v-else>加载天气中...</div>
+    </template>
   </div>
 </template>
 
@@ -18,10 +24,15 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import { useLoginStore } from '@/store/login'
+import Cache from '@/utils/cache'
 import { ref, onMounted, computed, onUnmounted } from 'vue'
+import { CACHE_KEY, CACHE_DURATION } from '@/constants/weather'
+import { useLoading } from '@/composables/useLoading'
 
+const { localCache } = Cache
 const loginStore = useLoginStore()
 const username = loginStore.user
+const { loading, startLoading, stopLoading } = useLoading(800)
 
 dayjs.locale('zh-cn')
 
@@ -30,6 +41,7 @@ const now = ref(dayjs())
 let interval: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
+  fetchWeather()
   interval = setInterval(() => {
     now.value = dayjs()
   }, 30000)
@@ -70,25 +82,42 @@ const getWeatherDescription = (code: number): string => {
 
 // 请求数据
 const fetchWeather = async () => {
+  startLoading()
+  const cached = localCache.getCache(CACHE_KEY)
+  if (cached) {
+    const { data, timestamp } = JSON.parse(cached)
+    if (Date.now() - timestamp < CACHE_DURATION) {
+      weatherData.value = data
+      stopLoading()
+
+      return
+    }
+  }
   const url =
-    'https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true&timezone=Asia/Shanghai'
+    'https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true&timezone=Asia/Chongqing'
   try {
     const res = await fetch(url)
     const data = await res.json()
+
     if (data.current_weather) {
       weatherData.value = {
         temp: Math.round(data.current_weather.temperature),
         text: getWeatherDescription(data.current_weather.weathercode),
       }
+      localCache.setCache(
+        CACHE_KEY,
+        JSON.stringify({
+          data: weatherData.value,
+          timestamp: Date.now(),
+        }),
+      )
     }
   } catch (error) {
     console.log('获取天气失败', error)
+  } finally {
+    stopLoading()
   }
 }
-
-onMounted(() => {
-  fetchWeather()
-})
 </script>
 
 <style lang="scss" scoped>

@@ -55,6 +55,7 @@ declare module 'vue' {
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSelect: typeof import('element-plus/es')['ElSelect']
+    ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElSpace: typeof import('element-plus/es')['ElSpace']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTable: typeof import('element-plus/es')['ElTable']
@@ -68,6 +69,7 @@ declare module 'vue' {
     Loading: typeof import('./src/components/Loading.vue')['default']
     MyDialog: typeof import('./src/components/MyDialog.vue')['default']
     MyDrawer: typeof import('./src/components/MyDrawer.vue')['default']
+    MySkeleton: typeof import('./src/components/MySkeleton.vue')['default']
     MyTable: typeof import('./src/components/MyTable.vue')['default']
     MyTree: typeof import('./src/components/MyTree.vue')['default']
     Pagination: typeof import('./src/components/Pagination.vue')['default']
@@ -75,6 +77,8 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchForm: typeof import('./src/components/SearchForm.vue')['default']
+    Skeleton: typeof import('./src/components/Skeleton.vue')['default']
+    SkeletonTable: typeof import('./src/components/SkeletonTable.vue')['default']
     VirtualList: typeof import('./src/components/VirtualList.vue')['default']
   }
   export interface GlobalDirectives {

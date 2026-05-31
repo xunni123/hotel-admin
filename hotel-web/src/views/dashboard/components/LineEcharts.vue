@@ -1,43 +1,61 @@
 <template>
   <div class="home-echarts-container">
-    <div class="home-echarts-header">
-      <h2>入住率趋势</h2>
-      <div class="home-echarts-container-btns">
-        <el-button
-          :class="{ 'active-btn': selectedRange === 'week' }"
-          round
-          @click="setRange('week')"
-          >近7天</el-button
-        >
-        <el-button
-          :class="{ 'active-btn': selectedRange === 'month' }"
-          round
-          @click="setRange('month')"
-          >近一个月</el-button
-        >
-        <el-button
-          :class="{ 'active-btn': selectedRange === 'halfYear' }"
-          round
-          @click="setRange('halfYear')"
-          >近一年</el-button
-        >
+    <template v-if="loading">
+      <Card v-for="i in 5" :key="i" class="card-item" :width="'180px'">
+        <MySkeleton mode="card" :rows="2" />
+      </Card>
+    </template>
+    <template v-else>
+      <div class="home-echarts-header">
+        <h2>入住率趋势</h2>
+        <div class="home-echarts-container-btns">
+          <el-button
+            :class="{ 'active-btn': selectedRange === 'week' }"
+            round
+            @click="setRange('week')"
+            >近7天</el-button
+          >
+          <el-button
+            :class="{ 'active-btn': selectedRange === 'month' }"
+            round
+            @click="setRange('month')"
+            >近一个月</el-button
+          >
+          <el-button
+            :class="{ 'active-btn': selectedRange === 'halfYear' }"
+            round
+            @click="setRange('halfYear')"
+            >近一年</el-button
+          >
+        </div>
       </div>
-    </div>
-    <div class="home-echarts-content">
-      <Echarts :option="lineOptions" :height="'300px'" />
-    </div>
+      <div class="home-echarts-content">
+        <Echarts :option="lineOptions" :height="'300px'" />
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-// 入住率
-import type { CheckIn } from '@/types'
+import type { CheckIn } from '@/types/echarts'
 import { useLineChart } from '@/composables/echarts/useLineChart'
 import { fetchOccupancy } from '@/api/dashboard'
+import { onMounted } from 'vue'
+import Card from '@/components/Card.vue'
+import MySkeleton from '@/components/MySkeleton.vue'
+import { useLoading } from '@/composables/useLoading'
 
-// 入住率数据
-fetchOccupancy().then((res) => {
-  setData(res.data)
+const { loading, startLoading, stopLoading } = useLoading(800)
+
+onMounted(async () => {
+  startLoading()
+  try {
+    const res = await fetchOccupancy()
+    setData(res.data)
+  } catch {
+  } finally {
+    stopLoading()
+  }
 })
 
 const getRangeText = (range: string) => {

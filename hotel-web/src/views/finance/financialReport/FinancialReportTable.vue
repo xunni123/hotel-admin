@@ -56,18 +56,19 @@
 
       <!-- 明细表格 -->
       <h3 style="margin-top: 24px; margin-bottom: 16px">收支明细</h3>
-      <MyTable
-        :loading="loading"
-        :data="data"
-        :options="tableOptions"
-      >
+      <MyTable :loading="loading" :data="data" :options="tableOptions">
         <template #type="{ scope }">
           <el-tag :type="scope.row.type === 'income' ? 'success' : 'danger'">
             {{ scope.row.type === 'income' ? '收入' : '支出' }}
           </el-tag>
         </template>
         <template #amount="{ scope }">
-          <span :style="{ color: scope.row.type === 'income' ? '#67c23a' : '#f56c6c', fontWeight: 'bold' }">
+          <span
+            :style="{
+              color: scope.row.type === 'income' ? '#67c23a' : '#f56c6c',
+              fontWeight: 'bold',
+            }"
+          >
             {{ scope.row.type === 'income' ? '+' : '-' }}¥{{ scope.row.amount }}
           </span>
         </template>
@@ -117,7 +118,7 @@ const exportColumns = [
   { prop: 'orderNo', label: '关联订单' },
   { prop: 'remark', label: '备注' },
   { prop: 'operator', label: '操作人' },
-  { prop: 'createTime', label: '创建时间' }
+  { prop: 'createTime', label: '创建时间' },
 ]
 
 // 统计数据
@@ -128,20 +129,20 @@ const monthOrders = ref(680)
 
 const datePickerType = computed(() => {
   const map: Record<string, string> = {
-    'day': 'date',
-    'week': 'week',
-    'month': 'month',
-    'year': 'year'
+    day: 'date',
+    week: 'week',
+    month: 'month',
+    year: 'year',
   }
   return map[reportType.value] || 'date'
 })
 
 const datePickerPlaceholder = computed(() => {
   const map: Record<string, string> = {
-    'day': '选择日期',
-    'week': '选择周',
-    'month': '选择月份',
-    'year': '选择年份'
+    day: '选择日期',
+    week: '选择周',
+    month: '选择月份',
+    year: '选择年份',
   }
   return map[reportType.value] || '选择日期'
 })
@@ -154,26 +155,26 @@ const tableOptions: Table[] = [
   { label: '关联订单', prop: 'orderNo', align: 'center' },
   { label: '备注', prop: 'remark', align: 'left' },
   { label: '操作人', prop: 'operator', align: 'center' },
-  { label: '创建时间', prop: 'createTime', align: 'center' }
+  { label: '创建时间', prop: 'createTime', align: 'center' },
 ]
 
 const initRevenueChart = () => {
   if (!revenueChartRef.value) return
-  
+
   const chart = echarts.init(revenueChartRef.value)
   const option = {
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
     },
     xAxis: {
       type: 'category',
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
     },
     yAxis: {
       type: 'value',
       axisLabel: {
-        formatter: '¥{value}'
-      }
+        formatter: '¥{value}',
+      },
     },
     series: [
       {
@@ -185,28 +186,28 @@ const initRevenueChart = () => {
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
-            { offset: 1, color: 'rgba(64, 158, 255, 0.05)' }
-          ])
-        }
-      }
-    ]
+            { offset: 1, color: 'rgba(64, 158, 255, 0.05)' },
+          ]),
+        },
+      },
+    ],
   }
   chart.setOption(option)
 }
 
 const initPaymentChart = () => {
   if (!paymentChartRef.value) return
-  
+
   const chart = echarts.init(paymentChartRef.value)
   const option = {
     tooltip: {
       trigger: 'item',
-      formatter: '{b}: {c} ({d}%)'
+      formatter: '{b}: {c} ({d}%)',
     },
     legend: {
       orient: 'vertical',
       right: 10,
-      top: 'center'
+      top: 'center',
     },
     series: [
       {
@@ -217,10 +218,10 @@ const initPaymentChart = () => {
           { value: 45, name: '微信支付', itemStyle: { color: '#67c23a' } },
           { value: 35, name: '支付宝', itemStyle: { color: '#409eff' } },
           { value: 15, name: '现金', itemStyle: { color: '#e6a23c' } },
-          { value: 5, name: '其他', itemStyle: { color: '#909399' } }
-        ]
-      }
-    ]
+          { value: 5, name: '其他', itemStyle: { color: '#909399' } },
+        ],
+      },
+    ],
   }
   chart.setOption(option)
 }
@@ -228,15 +229,15 @@ const initPaymentChart = () => {
 // 过滤数据
 const filterData = () => {
   let filtered = [...allData.value]
-  
+
   // 按日期类型过滤
   if (dateValue.value) {
-    filtered = filtered.filter(item => {
+    filtered = filtered.filter((item) => {
       // 根据日期类型进行过滤
       return true // 实际应该根据日期进行过滤
     })
   }
-  
+
   // 分页
   const start = (current.value - 1) * pageSize.value
   const end = start + pageSize.value
@@ -250,13 +251,13 @@ const fetchList = async () => {
     const result = await financialApi.getFinancialRecordList()
     if (result.code === 200) {
       // 将类型转换为中文
-      allData.value = result.data.map(item => ({
+      allData.value = result.data.map((item) => ({
         ...item,
         type: item.type === 'income' ? '收入' : '支出',
-        paymentMethod: getPaymentMethodText(item.paymentMethod)
+        paymentMethod: getPaymentMethodText(item.paymentMethod),
       }))
       filterData()
-      
+
       // 更新统计数据
       const summaryResult = await financialApi.getFinancialSummary()
       if (summaryResult.code === 200) {
@@ -275,10 +276,10 @@ const fetchList = async () => {
 
 const getPaymentMethodText = (method: string) => {
   const map: Record<string, string> = {
-    'wechat': '微信支付',
-    'alipay': '支付宝',
-    'cash': '现金',
-    'bank': '银行卡'
+    wechat: '微信支付',
+    alipay: '支付宝',
+    cash: '现金',
+    bank: '银行卡',
   }
   return map[method] || method
 }
@@ -314,24 +315,26 @@ const handleExport = () => {
     MessagePrompt('没有数据可导出', 'warning')
     return
   }
-  
+
   ElMessageBox.confirm(
     `确定要导出 ${total.value} 条财务记录数据吗？`,
     '确认导出',
     {
       confirmButtonText: '确定导出',
       cancelButtonText: '取消',
-      type: 'info'
-    }
-  ).then(() => {
-    // 获取所有数据
-    const exportData = [...allData.value]
-    
-    exportToExcel(exportData, exportColumns, '财务报表')
-    MessagePrompt('导出成功', 'success')
-  }).catch(() => {
-    MessagePrompt('已取消导出', 'info')
-  })
+      type: 'info',
+    },
+  )
+    .then(() => {
+      // 获取所有数据
+      const exportData = [...allData.value]
+
+      exportToExcel(exportData, exportColumns, '财务报表')
+      MessagePrompt('导出成功', 'success')
+    })
+    .catch(() => {
+      MessagePrompt('已取消导出', 'info')
+    })
 }
 
 const handleCurrentChange = (page: number) => {

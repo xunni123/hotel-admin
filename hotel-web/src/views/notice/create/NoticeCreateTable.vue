@@ -65,17 +65,27 @@ const formData = reactive({
 const rules = {
   title: [
     { required: true, message: '请输入公告标题', trigger: 'blur' },
-    { min: 2, max: 100, message: '标题长度在 2 到 100 个字符', trigger: 'blur' },
+    {
+      min: 2,
+      max: 100,
+      message: '标题长度在 2 到 100 个字符',
+      trigger: 'blur',
+    },
   ],
   content: [
     { required: true, message: '请输入公告内容', trigger: 'blur' },
-    { min: 10, max: 2000, message: '内容长度在 10 到 2000 个字符', trigger: 'blur' },
+    {
+      min: 10,
+      max: 2000,
+      message: '内容长度在 10 到 2000 个字符',
+      trigger: 'blur',
+    },
   ],
 }
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   await formRef.value.validate(async (valid) => {
     if (valid) {
       submitting.value = true

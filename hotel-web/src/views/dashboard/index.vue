@@ -16,10 +16,6 @@
     <RevenueChart />
   </div>
 
-  <!-- 待办事项 -->
-  <!-- <div class="home-schedule">
-    <Schedule />
-  </div> -->
 </template>
 
 <script setup>
@@ -63,7 +59,7 @@ import Schedule from './components/Schedule.vue'
   align-items: start;
   margin-top: 40px;
 
-  // 让第三个卡片占据整行
+  
   > div:nth-child(3) {
     grid-column: 1 / -1;
   }

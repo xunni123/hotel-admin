@@ -35,22 +35,25 @@
         </div>
       </div>
 
-      <MyTable
-        :loading="loading"
-        :data="data"
-        :options="tableOptions"
-      >
+      <MyTable :loading="loading" :data="data" :options="tableOptions">
         <template #type="{ scope }">
           <el-tag :type="getConsumeType(scope.row.type)">
             {{ getConsumeTypeText(scope.row.type) }}
           </el-tag>
         </template>
         <template #amount="{ scope }">
-          <span style="color: #f56c6c; font-weight: bold">-¥{{ scope.row.amount }}</span>
+          <span style="color: #f56c6c; font-weight: bold"
+            >-¥{{ scope.row.amount }}</span
+          >
         </template>
         <template #pointsChange="{ scope }">
-          <span :style="{ color: scope.row.pointsChange > 0 ? '#67c23a' : '#f56c6c' }">
-            {{ scope.row.pointsChange > 0 ? '+' : '' }}{{ scope.row.pointsChange }}
+          <span
+            :style="{
+              color: scope.row.pointsChange > 0 ? '#67c23a' : '#f56c6c',
+            }"
+          >
+            {{ scope.row.pointsChange > 0 ? '+' : ''
+            }}{{ scope.row.pointsChange }}
           </span>
         </template>
       </MyTable>
@@ -84,7 +87,7 @@ const total = ref(0)
 const dateRange = ref<string[]>([])
 const queryForm = reactive({
   keyword: '',
-  type: ''
+  type: '',
 })
 
 const tableOptions: Table[] = [
@@ -94,27 +97,32 @@ const tableOptions: Table[] = [
   { label: '手机号', prop: 'phone', align: 'center' },
   { label: '消费类型', prop: 'type', align: 'center', slot: 'type' },
   { label: '消费金额', prop: 'amount', align: 'right', slot: 'amount' },
-  { label: '积分变动', prop: 'pointsChange', align: 'center', slot: 'pointsChange' },
+  {
+    label: '积分变动',
+    prop: 'pointsChange',
+    align: 'center',
+    slot: 'pointsChange',
+  },
   { label: '当前积分', prop: 'currentPoints', align: 'center' },
   { label: '备注', prop: 'remark', align: 'left' },
   { label: '操作人', prop: 'operator', align: 'center' },
-  { label: '消费时间', prop: 'createTime', align: 'center' }
+  { label: '消费时间', prop: 'createTime', align: 'center' },
 ]
 
 const getConsumeType = (type: string) => {
   const map: Record<string, string> = {
-    'room': 'primary',
-    'goods': 'success',
-    'other': 'info'
+    room: 'primary',
+    goods: 'success',
+    other: 'info',
   }
   return map[type] || 'info'
 }
 
 const getConsumeTypeText = (type: string) => {
   const map: Record<string, string> = {
-    'room': '房费',
-    'goods': '商品',
-    'other': '其他'
+    room: '房费',
+    goods: '商品',
+    other: '其他',
   }
   return map[type] || type
 }
@@ -125,9 +133,9 @@ const fetchList = async () => {
     const result = await consumeApi.getConsumeList()
     if (result.code === 200) {
       // 将类型转换为中文
-      data.value = result.data.map(item => ({
+      data.value = result.data.map((item) => ({
         ...item,
-        type: getConsumeTypeText(item.type)
+        type: getConsumeTypeText(item.type),
       }))
       total.value = data.value.length
     }

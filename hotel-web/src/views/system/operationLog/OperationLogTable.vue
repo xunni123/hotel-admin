@@ -38,18 +38,16 @@
         </div>
       </div>
 
-      <MyTable
-        :loading="loading"
-        :data="data"
-        :options="tableOptions"
-      >
+      <MyTable :loading="loading" :data="data" :options="tableOptions">
         <template #type="{ scope }">
           <el-tag :type="getLogTypeColor(scope.row.type)">
             {{ getLogTypeText(scope.row.type) }}
           </el-tag>
         </template>
         <template #action="{ scope }">
-          <el-button size="small" @click="handleDetail(scope.row)">详情</el-button>
+          <el-button size="small" @click="handleDetail(scope.row)"
+            >详情</el-button
+          >
         </template>
       </MyTable>
 
@@ -133,7 +131,7 @@ const total = ref(0)
 const dateRange = ref<string[]>([])
 const queryForm = reactive({
   keyword: '',
-  module: ''
+  module: '',
 })
 
 const detailVisible = ref(false)
@@ -147,54 +145,65 @@ const detailData = reactive({
   ip: '',
   content: '',
   params: '',
-  result: ''
+  result: '',
 })
 
 const tableOptions: Table[] = [
   { label: '日志ID', prop: 'id', align: 'center' },
   { label: '操作类型', prop: 'type', align: 'center', slot: 'type' },
   { label: '功能模块', prop: 'module', align: 'center' },
-  { label: '操作内容', prop: 'content', align: 'left', showOverflowTooltip: true },
+  {
+    label: '操作内容',
+    prop: 'content',
+    align: 'left',
+    showOverflowTooltip: true,
+  },
   { label: '操作人', prop: 'operator', align: 'center' },
   { label: '操作IP', prop: 'ip', align: 'center' },
   { label: '操作时间', prop: 'createTime', align: 'center' },
-  { label: '操作', prop: 'actions', actions: true, align: 'center', width: 100 }
+  {
+    label: '操作',
+    prop: 'actions',
+    actions: true,
+    align: 'center',
+    width: 100,
+  },
 ]
 
 const getLogTypeColor = (type: string) => {
   const map: Record<string, string> = {
-    'add': 'success',
-    'edit': 'primary',
-    'delete': 'danger',
-    'query': 'info',
-    'login': 'warning',
-    'logout': 'info',
-    'other': 'info'
+    add: 'success',
+    edit: 'primary',
+    delete: 'danger',
+    query: 'info',
+    login: 'warning',
+    logout: 'info',
+    other: 'info',
   }
   return map[type] || 'info'
 }
 
 const getLogTypeText = (type: string) => {
   const map: Record<string, string> = {
-    'add': '新增',
-    'edit': '编辑',
-    'delete': '删除',
-    'query': '查询',
-    'login': '登录',
-    'logout': '登出',
-    'other': '其他'
+    add: '新增',
+    edit: '编辑',
+    delete: '删除',
+    query: '查询',
+    login: '登录',
+    logout: '登出',
+    other: '其他',
   }
   return map[type] || type
 }
 
 const getModuleText = (module: string) => {
   const map: Record<string, string> = {
-    'user': '用户管理',
-    'order': '订单管理',
-    'room': '房间管理',
-    'member': '会员管理',
-    'notice': '公告管理',
-    'system': '系统设置'
+    user: '用户管理',
+    order: '订单管理',
+    room: '房间管理',
+    member: '会员管理',
+    notice: '公告管理',
+    system: '系统设置',
   }
   return map[module] || module
 }
@@ -205,9 +214,9 @@ const fetchList = async () => {
     const result = await logApi.getOperationLogList()
     if (result.code === 200) {
       // 转换模块显示文本
-      data.value = result.data.map(item => ({
+      data.value = result.data.map((item) => ({
         ...item,
-        module: getModuleText(item.module)
+        module: getModuleText(item.module),
       }))
       total.value = data.value.length
     }
@@ -240,7 +249,7 @@ const handleDetail = (row: any) => {
     ip: row.ip,
     content: row.content,
     params: row.params,
-    result: row.result
+    result: row.result,
   })
   detailVisible.value = true
 }
