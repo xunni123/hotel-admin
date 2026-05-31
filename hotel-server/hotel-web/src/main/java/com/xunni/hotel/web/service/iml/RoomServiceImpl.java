@@ -13,8 +13,13 @@ import java.util.List;
 public class RoomServiceImpl extends ServiceImpl<RoomMapper, RoomDoto> implements RoomService {
 
     @Override
-    public List<RoomDoto> selectList(RoomDoto query) {
-        return baseMapper.selectRoomList(query);
+    public List<RoomDoto> selectList(RoomDoto query, int offset, int limit) {
+        return baseMapper.selectRoomList(query, offset, limit);
+    }
+
+    @Override
+    public Long countList(RoomDoto query) {
+        return baseMapper.countRoomList(query);
     }
 
     public List<Room> selectAll() {

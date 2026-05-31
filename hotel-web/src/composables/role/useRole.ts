@@ -5,6 +5,7 @@ import { MessagePrompt } from '@/utils/message'
 import { updateRole, deleteRole } from '@/api/role'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import cache from '@/utils/cache'
+import { useLoading } from '@/composables/useLoading'
 
 const { sessionCache } = cache
 
@@ -33,7 +34,7 @@ export const useTable = <T>(
   options: UseTableOptions = {},
 ) => {
   const data = ref<T[]>([]) as Ref<T[]>
-  const loading = ref(false)
+  const { loading, startLoading, stopLoading } = useLoading(500)
   const queryParams = ref<Record<string, any>>({})
 
   const current = ref(1)
@@ -98,7 +99,7 @@ export const useTable = <T>(
 
   // 获取
   const fetchList = async (params?: Record<string, any>) => {
-    loading.value = true
+    startLoading()
 
     try {
       const query: Record<string, any> = {
@@ -121,7 +122,7 @@ export const useTable = <T>(
     } catch (error) {
       MessagePrompt('网络错误', 'error')
     } finally {
-      loading.value = false
+      stopLoading()
     }
   }
 
@@ -247,6 +248,8 @@ export const useTable = <T>(
   return {
     data,
     loading,
+    startLoading,
+    stopLoading,
     queryParams,
     current,
     pageSize,

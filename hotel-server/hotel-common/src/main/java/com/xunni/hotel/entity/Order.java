@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Data
 @TableName("orders")
 public class Order {
@@ -37,7 +40,10 @@ public class Order {
     private Integer nights;
 
     @TableField("total_amount")
-    private Float totalAmount;
+    private BigDecimal totalAmount;
+
+    @TableField("payment_method")
+    private String paymentMethod;
 
     @TableField("order_status")
     private String orderStatus;
@@ -50,4 +56,7 @@ public class Order {
 
     @TableField("remarks")
     private String remarks;
+
+    @TableField("create_time")
+    private LocalDateTime createTime;
 }

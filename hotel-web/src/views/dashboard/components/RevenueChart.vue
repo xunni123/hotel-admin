@@ -10,11 +10,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { fetchRevenue } from '@/api/dashboard'
 import { useBarAndLineGroup } from '@/composables/echarts/useBarAndLineGroup'
-
-const dataList = ref({})
 
 const { chartOption: revenueOption, setData } = useBarAndLineGroup({
   title: '近7天营收趋势',
@@ -23,8 +21,15 @@ const { chartOption: revenueOption, setData } = useBarAndLineGroup({
 })
 
 // getData
-fetchRevenue().then((res) => {
-  setData(res.data[0])
+onMounted(async () => {
+  try {
+    const res = await fetchRevenue()
+    if (res.data && res.data.length > 0) {
+      setData(res.data[0])
+    }
+  } catch {
+    // chart stays empty
+  }
 })
 </script>
 

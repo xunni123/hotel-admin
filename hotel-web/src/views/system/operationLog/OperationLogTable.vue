@@ -122,8 +122,9 @@ import { ElMessage } from 'element-plus'
 import type { Table } from '@/types'
 import * as logApi from '@/api/operationLog'
 import type { OperationLog } from '@/api/operationLog'
+import { useLoading } from '@/composables/useLoading'
 
-const loading = ref(false)
+const { loading, startLoading, stopLoading } = useLoading(500)
 const data = ref<any[]>([])
 const current = ref(1)
 const pageSize = ref(10)
@@ -209,7 +210,7 @@ const getModuleText = (module: string) => {
 }
 
 const fetchList = async () => {
-  loading.value = true
+  startLoading()
   try {
     const result = await logApi.getOperationLogList()
     if (result.code === 200) {
@@ -223,7 +224,7 @@ const fetchList = async () => {
   } catch (error) {
     ElMessage.error('获取数据失败')
   } finally {
-    loading.value = false
+    stopLoading()
   }
 }
 

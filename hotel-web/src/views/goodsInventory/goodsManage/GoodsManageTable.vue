@@ -157,8 +157,9 @@ import { MessagePrompt } from '@/utils/message'
 import type { Table } from '@/types'
 import * as goodsApi from '@/api/goods'
 import type { Goods } from '@/api/goods'
+import { useLoading } from '@/composables/useLoading'
 
-const loading = ref(false)
+const { loading, startLoading, stopLoading } = useLoading(500)
 const allData = ref<Goods[]>([])
 const data = ref<Goods[]>([])
 const current = ref(1)
@@ -248,7 +249,7 @@ const filterData = () => {
 }
 
 const fetchList = async () => {
-  loading.value = true
+  startLoading()
   try {
     const result = await goodsApi.getGoodsList()
     if (result.code === 200) {
@@ -262,7 +263,7 @@ const fetchList = async () => {
   } catch (error) {
     ElMessage.error('获取数据失败')
   } finally {
-    loading.value = false
+    stopLoading()
   }
 }
 

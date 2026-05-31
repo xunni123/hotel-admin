@@ -109,10 +109,11 @@ import { useRouter } from 'vue-router'
 import { MessagePrompt } from '@/utils/message'
 import type { Table } from '@/types'
 import type { Announcement } from '@/api/announcement'
+import { useLoading } from '@/composables/useLoading'
 
 const router = useRouter()
 
-const loading = ref(false)
+const { loading, startLoading, stopLoading } = useLoading(500)
 const data = ref<Announcement[]>([])
 const noticeTableRef = ref<InstanceType<typeof MyTable>>()
 
@@ -173,7 +174,7 @@ const tableOptions: Table[] = [
 ]
 
 const fetchList = async () => {
-  loading.value = true
+  startLoading()
   try {
     const result = await announcementApi.getAnnouncements()
     if (result.code === 200) {
@@ -188,7 +189,7 @@ const fetchList = async () => {
   } catch (error) {
     MessagePrompt('获取公告列表失败', 'error')
   } finally {
-    loading.value = false
+    stopLoading()
   }
 }
 

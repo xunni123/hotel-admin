@@ -1,13 +1,13 @@
 package com.xunni.hotel.web.mapper;
 
 import com.xunni.hotel.entity.HomeCard.RegionDistribution;
-import com.xunni.hotel.entity.HomeCard.Revenue;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DashboardMapper {
@@ -35,6 +35,18 @@ public interface DashboardMapper {
                         "WHERE check_in_date <= #{today} AND check_out_date > #{today} " +
                         "AND order_status = 'checked_in'")
         Integer countOccupiedRooms(@Param("today") LocalDate today);
+
+        // Batch query: count occupied rooms for a date range (single query, no N+1)
+        @Select("SELECT DATE_SUB(CURDATE(), INTERVAL n DAY) AS date, " +
+                        "COALESCE(COUNT(DISTINCT o.room_id), 0) AS count " +
+                        "FROM numbers " +
+                        "LEFT JOIN orders o ON o.check_in_date <= DATE_SUB(CURDATE(), INTERVAL n DAY) " +
+                        "  AND o.check_out_date > DATE_SUB(CURDATE(), INTERVAL n DAY) " +
+                        "  AND o.order_status = 'checked_in' " +
+                        "WHERE n BETWEEN 0 AND #{daysMinus1} " +
+                        "GROUP BY DATE_SUB(CURDATE(), INTERVAL n DAY) " +
+                        "ORDER BY date")
+        List<Map<String, Object>> countOccupiedRoomsBatch(@Param("daysMinus1") int daysMinus1);
 
         // 5. Today revenue (sum of paid amount where check-out date = today and order
         // status is 'checked_out')
@@ -71,26 +83,15 @@ public interface DashboardMapper {
                         "ORDER BY orderCount DESC")
         List<RegionDistribution> getRegionDistribution();
 
-        // 7. Revenue statistics (last 30 days)
-        @Select("WITH date_series AS (\n" +
-                        "    SELECT DATE_SUB(CURDATE(), INTERVAL n DAY) AS date \n" +
-                        "    FROM numbers \n" +
-                        "    WHERE n BETWEEN 29 AND 0 \n" +
-                        "),\n" +
-                        "revenue_data AS (\n" +
-                        "    SELECT \n" +
-                        "        ds.date,\n" +
-                        "        COALESCE(SUM(o.paid_amount), 0) AS revenue,\n" +
-                        "        ROUND(COALESCE(SUM(o.paid_amount), 0) / (SELECT COUNT(*) FROM rooms), 2) AS revpar\n" +
-                        "    FROM date_series ds\n" +
-                        "    LEFT JOIN orders o ON o.check_out_date = ds.date AND o.order_status = 'checked_out'\n" +
-                        "    GROUP BY ds.date\n" +
-                        "    ORDER BY ds.date\n" +
-                        ")\n" +
-                        "SELECT \n" +
-                        "    GROUP_CONCAT(date ORDER BY date) AS dates,\n" +
-                        "    GROUP_CONCAT(revenue ORDER BY date) AS revenue,\n" +
-                        "    GROUP_CONCAT(revpar ORDER BY date) AS revpar\n" +
-                        "FROM revenue_data")
-        List<Revenue> getRevenue();
+        // 7. Revenue statistics (last 30 days) - returns daily rows, Service assembles lists
+        @Select("SELECT " +
+                        "    DATE_SUB(CURDATE(), INTERVAL n DAY) AS date, " +
+                        "    COALESCE(SUM(o.paid_amount), 0) AS revenue, " +
+                        "    ROUND(COALESCE(SUM(o.paid_amount), 0) / (SELECT COUNT(*) FROM room), 2) AS revpar " +
+                        "FROM numbers " +
+                        "LEFT JOIN orders o ON o.check_out_date = DATE_SUB(CURDATE(), INTERVAL n DAY) AND o.order_status = 'checked_out' " +
+                        "WHERE n BETWEEN 0 AND 29 " +
+                        "GROUP BY DATE_SUB(CURDATE(), INTERVAL n DAY) " +
+                        "ORDER BY date")
+        List<Map<String, Object>> getRevenueRows();
 }

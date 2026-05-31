@@ -8,7 +8,9 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 public interface RoomMapper extends BaseMapper<RoomDoto> {
-        List<RoomDoto> selectRoomList(@Param("query") RoomDoto query);
+        List<RoomDoto> selectRoomList(@Param("query") RoomDoto query, @Param("offset") int offset, @Param("limit") int limit);
+
+        Long countRoomList(@Param("query") RoomDoto query);
 
         @Select("SELECT r.room_id, r.room_number, b.building_name AS building, " +
                         "f.floor_name AS floor, rt.type_name AS room_type, rt.price AS price, rt.max_guests AS capacity, r.status, "

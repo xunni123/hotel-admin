@@ -31,20 +31,25 @@
           </el-select>
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
+          <el-button type="success" @click="handleAdd">新增订单</el-button>
           <el-button type="success" @click="handleExport">导出</el-button>
         </div>
       </div>
 
       <MyTable :loading="loading" :data="data" :options="tableOptions">
-        <template #status="{ scope }">
-          <el-tag :type="getStatusType(scope.row.status)">
-            {{ getStatusText(scope.row.status) }}
+        <template #orderStatus="{ scope }">
+          <el-tag :type="getStatusType(scope.row.orderStatus)">
+            {{ getStatusText(scope.row.orderStatus) }}
           </el-tag>
         </template>
         <template #totalAmount="{ scope }">
           <span style="color: #f56c6c; font-weight: bold"
             >¥{{ scope.row.totalAmount }}</span
           >
+        </template>
+        <template #action="{ scope }">
+          <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </MyTable>
 
@@ -56,6 +61,100 @@
         @size-change="handleSizeChange"
       />
     </Card>
+
+    <!-- 新增/编辑弹窗 -->
+    <el-dialog
+      v-model="dialogVisible"
+      :title="isEdit ? '编辑订单' : '新增订单'"
+      width="650px"
+    >
+      <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
+        <el-form-item label="订单号" prop="orderNo">
+          <el-input v-model="formData.orderNo" placeholder="请输入订单号" />
+        </el-form-item>
+        <el-form-item label="房间号" prop="roomNumber">
+          <el-input v-model="formData.roomNumber" placeholder="请输入房间号" />
+        </el-form-item>
+        <el-form-item label="客人姓名" prop="guestName">
+          <el-input v-model="formData.guestName" placeholder="请输入客人姓名" />
+        </el-form-item>
+        <el-form-item label="联系电话" prop="guestPhone">
+          <el-input v-model="formData.guestPhone" placeholder="请输入联系电话" />
+        </el-form-item>
+        <el-row :gutter="16">
+          <el-col :span="12">
+            <el-form-item label="入住日期" prop="checkInDate">
+              <el-date-picker
+                v-model="formData.checkInDate"
+                type="date"
+                placeholder="选择日期"
+                value-format="YYYY-MM-DD"
+                style="width: 100%"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="退房日期" prop="checkOutDate">
+              <el-date-picker
+                v-model="formData.checkOutDate"
+                type="date"
+                placeholder="选择日期"
+                value-format="YYYY-MM-DD"
+                style="width: 100%"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="16">
+          <el-col :span="12">
+            <el-form-item label="入住天数" prop="nights">
+              <el-input-number v-model="formData.nights" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="订单金额" prop="totalAmount">
+              <el-input-number v-model="formData.totalAmount" :min="0" :precision="2" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="16">
+          <el-col :span="12">
+            <el-form-item label="支付方式" prop="paymentMethod">
+              <el-select v-model="formData.paymentMethod" placeholder="请选择" style="width: 100%">
+                <el-option label="微信支付" value="wechat" />
+                <el-option label="支付宝" value="alipay" />
+                <el-option label="现金" value="cash" />
+                <el-option label="银行卡" value="bank" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="订单状态" prop="orderStatus">
+              <el-select v-model="formData.orderStatus" placeholder="请选择" style="width: 100%">
+                <el-option label="已完成" value="completed" />
+                <el-option label="已取消" value="cancelled" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="支付状态" prop="paymentStatus">
+          <el-radio-group v-model="formData.paymentStatus">
+            <el-radio label="paid">已支付</el-radio>
+            <el-radio label="unpaid">未支付</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="预订渠道" prop="bookChannel">
+          <el-input v-model="formData.bookChannel" placeholder="请输入预订渠道" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remarks">
+          <el-input v-model="formData.remarks" type="textarea" :rows="2" placeholder="请输入备注" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -64,13 +163,15 @@ import { ref, reactive, onMounted } from 'vue'
 import MyTable from '@/components/MyTable.vue'
 import Pagination from '@/components/Pagination.vue'
 import Card from '@/components/Card.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox, ElForm } from 'element-plus'
 import { MessagePrompt } from '@/utils/message'
 import { exportToExcel } from '@/utils/export'
 import type { Table } from '@/types'
 import dayjs from 'dayjs'
+import { useLoading } from '@/composables/useLoading'
+import * as orderApi from '@/api/order'
 
-const loading = ref(false)
+const { loading, startLoading, stopLoading } = useLoading(500)
 const allData = ref<any[]>([])
 const data = ref<any[]>([])
 const current = ref(1)
@@ -82,7 +183,35 @@ const queryForm = reactive({
   status: '',
 })
 
-// 导出列定义
+const dialogVisible = ref(false)
+const isEdit = ref(false)
+const submitting = ref(false)
+const formRef = ref<InstanceType<typeof ElForm>>()
+const formData = reactive({
+  orderId: null as number | null,
+  orderNo: '',
+  roomNumber: '',
+  guestName: '',
+  guestPhone: '',
+  checkInDate: '',
+  checkOutDate: '',
+  nights: 0,
+  totalAmount: 0,
+  paymentMethod: '',
+  orderStatus: 'completed',
+  paymentStatus: 'paid',
+  bookChannel: '',
+  remarks: '',
+})
+
+const rules = {
+  orderNo: [{ required: true, message: '请输入订单号', trigger: 'blur' }],
+  roomNumber: [{ required: true, message: '请输入房间号', trigger: 'blur' }],
+  guestName: [{ required: true, message: '请输入客人姓名', trigger: 'blur' }],
+  checkInDate: [{ required: true, message: '请选择入住日期', trigger: 'change' }],
+  checkOutDate: [{ required: true, message: '请选择退房日期', trigger: 'change' }],
+}
+
 const exportColumns = [
   { prop: 'orderNo', label: '订单号' },
   { prop: 'roomNumber', label: '房间号' },
@@ -93,7 +222,7 @@ const exportColumns = [
   { prop: 'nights', label: '入住天数' },
   { prop: 'totalAmount', label: '订单金额' },
   { prop: 'paymentMethod', label: '支付方式' },
-  { prop: 'status', label: '状态' },
+  { prop: 'orderStatus', label: '状态' },
   { prop: 'createTime', label: '创建时间' },
 ]
 
@@ -105,38 +234,31 @@ const tableOptions: Table[] = [
   { label: '入住日期', prop: 'checkInDate', align: 'center' },
   { label: '退房日期', prop: 'checkOutDate', align: 'center' },
   { label: '入住天数', prop: 'nights', align: 'center' },
-  {
-    label: '订单金额',
-    prop: 'totalAmount',
-    align: 'right',
-    slot: 'totalAmount',
-  },
+  { label: '订单金额', prop: 'totalAmount', align: 'right', slot: 'totalAmount' },
   { label: '支付方式', prop: 'paymentMethod', align: 'center' },
-  { label: '状态', prop: 'status', align: 'center', slot: 'status' },
+  { label: '状态', prop: 'orderStatus', align: 'center', slot: 'orderStatus' },
   { label: '创建时间', prop: 'createTime', align: 'center' },
+  { label: '操作', prop: 'actions', actions: true, align: 'center', width: 160 },
 ]
 
 const getStatusType = (status: string) => {
-  const map: Record<string, string> = {
-    completed: 'success',
-    cancelled: 'info',
-  }
+  const map: Record<string, string> = { completed: 'success', cancelled: 'info' }
   return map[status] || 'info'
 }
 
 const getStatusText = (status: string) => {
-  const map: Record<string, string> = {
-    completed: '已完成',
-    cancelled: '已取消',
-  }
+  const map: Record<string, string> = { completed: '已完成', cancelled: '已取消' }
   return map[status] || status
 }
 
-// 过滤数据
+const getPaymentMethodText = (method: string) => {
+  const map: Record<string, string> = { wechat: '微信支付', alipay: '支付宝', cash: '现金', bank: '银行卡' }
+  return map[method] || method
+}
+
 const filterData = () => {
   let filtered = [...allData.value]
 
-  // 按关键词过滤
   if (queryForm.keyword) {
     const keyword = queryForm.keyword.toLowerCase()
     filtered = filtered.filter(
@@ -147,12 +269,10 @@ const filterData = () => {
     )
   }
 
-  // 按状态过滤
   if (queryForm.status) {
-    filtered = filtered.filter((item) => item.status === queryForm.status)
+    filtered = filtered.filter((item) => item.orderStatus === queryForm.status)
   }
 
-  // 按日期范围过滤
   if (dateRange.value && dateRange.value.length === 2) {
     const [startDate, endDate] = dateRange.value
     filtered = filtered.filter((item) => {
@@ -161,7 +281,6 @@ const filterData = () => {
     })
   }
 
-  // 分页
   const start = (current.value - 1) * pageSize.value
   const end = start + pageSize.value
   data.value = filtered.slice(start, end)
@@ -169,55 +288,31 @@ const filterData = () => {
 }
 
 const fetchList = async () => {
-  loading.value = true
+  startLoading()
   try {
-    // 模拟数据 - 实际应该从API获取
-    allData.value = [
-      {
-        orderNo: 'ORD20240501001',
-        roomNumber: '101',
-        guestName: '张三',
-        guestPhone: '13800138001',
-        checkInDate: '2024-05-01',
-        checkOutDate: '2024-05-03',
-        nights: 2,
-        totalAmount: 598,
-        paymentMethod: '微信支付',
-        status: 'completed',
-        createTime: '2024-05-01 14:30:00',
-      },
-      {
-        orderNo: 'ORD20240502002',
-        roomNumber: '205',
-        guestName: '李四',
-        guestPhone: '13800138002',
-        checkInDate: '2024-05-02',
-        checkOutDate: '2024-05-05',
-        nights: 3,
-        totalAmount: 888,
-        paymentMethod: '支付宝',
-        status: 'completed',
-        createTime: '2024-05-02 09:15:00',
-      },
-    ]
+    const params: any = {}
+    if (queryForm.keyword) params.keyword = queryForm.keyword
+    if (queryForm.status) params.status = queryForm.status
+    if (dateRange.value && dateRange.value.length === 2) {
+      params.startDate = dateRange.value[0]
+      params.endDate = dateRange.value[1]
+    }
 
-    // 将状态转换为文本
-    allData.value = allData.value.map((item) => ({
-      ...item,
-      status: getStatusText(item.status),
-    }))
-
-    filterData()
+    const result = await orderApi.getOrderList(params)
+    if (result.code === 200) {
+      allData.value = result.data
+      filterData()
+    }
   } catch (error) {
     ElMessage.error('获取数据失败')
   } finally {
-    loading.value = false
+    stopLoading()
   }
 }
 
 const handleQuery = () => {
   current.value = 1
-  filterData()
+  fetchList()
 }
 
 const handleReset = () => {
@@ -225,8 +320,117 @@ const handleReset = () => {
   queryForm.status = ''
   dateRange.value = []
   current.value = 1
-  filterData()
+  fetchList()
   MessagePrompt('已重置', 'success')
+}
+
+const handleAdd = () => {
+  isEdit.value = false
+  Object.assign(formData, {
+    orderId: null,
+    orderNo: '',
+    roomNumber: '',
+    guestName: '',
+    guestPhone: '',
+    checkInDate: '',
+    checkOutDate: '',
+    nights: 0,
+    totalAmount: 0,
+    paymentMethod: '',
+    orderStatus: 'completed',
+    paymentStatus: 'paid',
+    bookChannel: '',
+    remarks: '',
+  })
+  dialogVisible.value = true
+}
+
+const handleEdit = (row: any) => {
+  isEdit.value = true
+  Object.assign(formData, {
+    orderId: row.orderId,
+    orderNo: row.orderNo,
+    roomNumber: row.roomNumber,
+    guestName: row.guestName,
+    guestPhone: row.guestPhone,
+    checkInDate: row.checkInDate,
+    checkOutDate: row.checkOutDate,
+    nights: row.nights,
+    totalAmount: row.totalAmount,
+    paymentMethod: row.paymentMethod,
+    orderStatus: row.orderStatus,
+    paymentStatus: row.paymentStatus,
+    bookChannel: row.bookChannel,
+    remarks: row.remarks,
+  })
+  dialogVisible.value = true
+}
+
+const handleDelete = (row: any) => {
+  ElMessageBox.confirm(`确定要删除订单"${row.orderNo}"吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        const result = await orderApi.deleteOrder(row.orderId)
+        if (result.code === 200) {
+          MessagePrompt('删除成功', 'success')
+          fetchList()
+        } else {
+          MessagePrompt(result.message || '删除失败', 'error')
+        }
+      } catch (error) {
+        MessagePrompt('删除失败', 'error')
+      }
+    })
+    .catch(() => {})
+}
+
+const handleSubmit = async () => {
+  if (!formRef.value) return
+  await formRef.value.validate(async (valid) => {
+    if (valid) {
+      submitting.value = true
+      try {
+        const submitData = {
+          orderNo: formData.orderNo,
+          roomNumber: formData.roomNumber,
+          guestName: formData.guestName,
+          guestPhone: formData.guestPhone,
+          checkInDate: formData.checkInDate,
+          checkOutDate: formData.checkOutDate,
+          nights: formData.nights,
+          totalAmount: formData.totalAmount,
+          paymentMethod: formData.paymentMethod,
+          orderStatus: formData.orderStatus,
+          paymentStatus: formData.paymentStatus,
+          bookChannel: formData.bookChannel,
+          remarks: formData.remarks,
+        }
+
+        let result
+        if (isEdit.value) {
+          result = await orderApi.updateOrder(formData.orderId!, submitData)
+        } else {
+          result = await orderApi.addOrder(submitData)
+        }
+
+        if (result.code === 200) {
+          MessagePrompt(isEdit.value ? '编辑成功' : '新增成功', 'success')
+          dialogVisible.value = false
+          fetchList()
+        } else {
+          MessagePrompt(result.message || '操作失败', 'error')
+        }
+      } catch (error) {
+        MessagePrompt('操作失败', 'error')
+      } finally {
+        submitting.value = false
+      }
+    }
+  })
 }
 
 const handleExport = () => {
@@ -235,33 +439,20 @@ const handleExport = () => {
     return
   }
 
-  ElMessageBox.confirm(
-    `确定要导出 ${total.value} 条历史订单数据吗？`,
-    '确认导出',
-    {
-      confirmButtonText: '确定导出',
-      cancelButtonText: '取消',
-      type: 'info',
-    },
-  )
+  ElMessageBox.confirm(`确定要导出 ${total.value} 条历史订单数据吗？`, '确认导出', {
+    confirmButtonText: '确定导出',
+    cancelButtonText: '取消',
+    type: 'info',
+  })
     .then(() => {
-      // 获取所有过滤后的数据（不分页）
       let exportData = [...allData.value]
-
-      if (
-        queryForm.keyword ||
-        queryForm.status ||
-        (dateRange.value && dateRange.value.length === 2)
-      ) {
-        // 如果有查询条件，重新过滤
+      if (queryForm.keyword || queryForm.status || (dateRange.value && dateRange.value.length === 2)) {
         filterData()
-        exportData = [...data.value]
-        // 恢复分页
+        exportData = data.value
         const start = (current.value - 1) * pageSize.value
         const end = start + pageSize.value
         data.value = exportData.slice(start, end)
       }
-
       exportToExcel(exportData, exportColumns, '历史订单')
       MessagePrompt('导出成功', 'success')
     })
@@ -272,12 +463,12 @@ const handleExport = () => {
 
 const handleCurrentChange = (page: number) => {
   current.value = page
-  fetchList()
+  filterData()
 }
 
 const handleSizeChange = (size: number) => {
   pageSize.value = size
-  fetchList()
+  filterData()
 }
 
 onMounted(() => {
@@ -331,6 +522,10 @@ onMounted(() => {
   }
 
   :deep(.el-button:nth-child(3)) {
+    background-color: var(--success);
+  }
+
+  :deep(.el-button:nth-child(4)) {
     background-color: var(--success);
   }
 

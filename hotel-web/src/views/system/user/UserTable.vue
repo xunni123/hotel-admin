@@ -78,6 +78,8 @@ const loginStore = useLoginStore()
 
 const {
   loading,
+  startLoading,
+  stopLoading,
   data,
   current,
   pageSize,
@@ -126,16 +128,26 @@ const queryForm = ref({
   username: '',
 })
 
-const handleQuery = () => {
+const handleQuery = async () => {
   const params = { username: queryForm.value.username }
-  select(params)
-  fetchList(params)
+  startLoading()
+  try {
+    await select(params)
+    await fetchList(params)
+  } finally {
+    stopLoading()
+  }
 }
 
-const handleReset = () => {
+const handleReset = async () => {
   queryForm.value.username = ''
   clearCache()
-  fetchList()
+  startLoading()
+  try {
+    await fetchList()
+  } finally {
+    stopLoading()
+  }
 }
 
 const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
@@ -169,9 +181,14 @@ const handleDelete = (row: any) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (!loadCache()) {
-    fetchList()
+    startLoading()
+    try {
+      await fetchList()
+    } finally {
+      stopLoading()
+    }
   }
 })
 </script>

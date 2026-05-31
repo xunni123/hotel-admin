@@ -49,10 +49,11 @@ public class RoomController {
         query.setCheckinType(checkinType);
         query.setChannel(channel);
 
-        List<RoomDoto> roomList = roomService.selectList(query);
-        int total = roomList.size();
+        int offset = (page - 1) * pageSize;
+        List<RoomDoto> roomList = roomService.selectList(query, offset, pageSize);
+        Long total = roomService.countList(query);
 
-        return Result.success(roomList, total);
+        return Result.success(roomList, total.intValue());
     }
 
     @GetMapping("/all")

@@ -62,17 +62,15 @@ const removeTab = (targetName: TabPaneName) => {
   const tabs = tabList.value
   let activeName = activeTab.value
   if (activeName === targetName) {
-    tabs.forEach((tab, index) => {
-      if (tab.path === targetName) {
-        const nextTab = tabs[index + 1] || tabs[index - 1]
-        if (nextTab) {
-          activeName = nextTab.path
-        }
-      }
-    })
+    const targetIndex = tabs.findIndex((tab) => tab.path === targetName)
+    if (targetIndex !== -1) {
+      const nextTab = tabs[targetIndex + 1] || tabs[targetIndex - 1]
+      activeName = nextTab ? nextTab.path : HOME_TAB.path
+    }
+    activeTab.value = activeName
+    router.push(activeName)
   }
 
-  activeTab.value = activeName
   tabsStore.setTabList(tabs.filter((tab) => tab.path !== targetName))
 }
 

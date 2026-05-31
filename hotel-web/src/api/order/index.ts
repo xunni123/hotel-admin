@@ -1,7 +1,14 @@
 import service from "@/services"
 
-export const getOrderList = () => {
-  return service.get("/order/list")
+export interface OrderQuery {
+  keyword?: string
+  status?: string
+  startDate?: string
+  endDate?: string
+}
+
+export const getOrderList = (params?: OrderQuery) => {
+  return service.get("/order/list", { params })
 }
 
 export const updateOrder = (orderId: number, data: any) => {
@@ -10,4 +17,8 @@ export const updateOrder = (orderId: number, data: any) => {
 
 export const addOrder = (data: any) => {
   return service.post("/order/add", data)
+}
+
+export const deleteOrder = (orderId: number) => {
+  return service.delete(`/order/${orderId}`)
 }

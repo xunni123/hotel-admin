@@ -5,40 +5,8 @@ import { setupAuth } from './auth'
 import 'nprogress/nprogress.css'
 import type { RouteRecordRaw } from 'vue-router'
 
-// 页面
+// Layout is always needed (shell), so eager import is correct
 import Layout from '@/layout/index.vue'
-import Login from '@/views/login/index.vue'
-import NotFound from '@/views/404/index.vue'
-import BookingList from '@/views/booking/list/index.vue'
-import DashBoard from '@/views/dashboard/index.vue'
-import RoomStatus from '@/views/roomstatus/index.vue'
-import User from '@/views/system/user/index.vue'
-import Role from '@/views/system/role/index.vue'
-import Menu from '@/views/system/menu/index.vue'
-import RoomType from '@/views/base/roomType/index.vue'
-import Floor from '@/views/base/floor/index.vue'
-import Channel from '@/views/base/channel/index.vue'
-// 入住列表
-import List from '@/views/List/index.vue'
-// 订单列表
-import OrderList from '@/views/order/OrderList.vue'
-// 会员列表
-import MemberList from '@/views/member/MemberList.vue'
-
-//清洁管理
-import RoomCleaning from '@/views/room/cleaning/index.vue'
-//公告管理
-import NoticeCreate from '@/views/notice/create/index.vue'
-import NoticeList from '@/views/notice/list/index.vue'
-//财务管理
-import HistoryOrder from '@/views/finance/historyOrder/index.vue'
-import FinancialReport from '@/views/finance/financialReport/index.vue'
-//会员消费
-import ConsumeRecord from '@/views/memberConsume/consumeRecord/index.vue'
-//商品库存
-import GoodsManage from '@/views/goodsInventory/goodsManage/index.vue'
-//系统管理 - 操作日志
-import OperationLog from '@/views/system/operationLog/index.vue'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -51,7 +19,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/',
         name: 'Dashboard',
-        component: DashBoard,
+        component: () => import('@/views/dashboard/index.vue'),
       },
     ],
   },
@@ -61,7 +29,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '登录页',
     },
-    component: Login,
+    component: () => import('@/views/login/index.vue'),
   },
   {
     path: '/404',
@@ -69,7 +37,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: '404页',
     },
-    component: NotFound,
+    component: () => import('@/views/404/index.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
@@ -91,7 +59,7 @@ const asyncRoutes = [
   {
     path: '/booking/list',
     name: 'BookingList',
-    component: BookingList,
+    component: () => import('@/views/booking/list/index.vue'),
     meta: {
       title: '预定列表',
     },
@@ -99,7 +67,7 @@ const asyncRoutes = [
   {
     path: '/dashboard',
     name: 'DashboardPanel',
-    component: DashBoard,
+    component: () => import('@/views/dashboard/index.vue'),
     meta: {
       title: '房态面板',
     },
@@ -107,7 +75,7 @@ const asyncRoutes = [
   {
     path: '/roomstatus',
     name: 'Roomstatus',
-    component: RoomStatus,
+    component: () => import('@/views/roomstatus/index.vue'),
     meta: {
       title: '房态面板',
     },
@@ -115,7 +83,7 @@ const asyncRoutes = [
   {
     path: '/system/role',
     name: 'Role',
-    component: Role,
+    component: () => import('@/views/system/role/index.vue'),
     meta: {
       title: '角色管理',
     },
@@ -123,7 +91,7 @@ const asyncRoutes = [
   {
     path: '/system/user',
     name: 'User',
-    component: User,
+    component: () => import('@/views/system/user/index.vue'),
     meta: {
       title: '用户管理',
     },
@@ -131,7 +99,7 @@ const asyncRoutes = [
   {
     path: '/system/menu',
     name: 'Menu',
-    component: Menu,
+    component: () => import('@/views/system/menu/index.vue'),
     meta: {
       title: '菜单管理',
     },
@@ -139,7 +107,7 @@ const asyncRoutes = [
   {
     path: '/base/roomType',
     name: 'RoomType',
-    component: RoomType,
+    component: () => import('@/views/base/roomType/index.vue'),
     meta: {
       title: '房型管理',
     },
@@ -147,7 +115,7 @@ const asyncRoutes = [
   {
     path: '/base/floor',
     name: 'Floor',
-    component: Floor,
+    component: () => import('@/views/base/floor/index.vue'),
     meta: {
       title: '楼层管理',
     },
@@ -155,7 +123,7 @@ const asyncRoutes = [
   {
     path: '/base/channel',
     name: 'Channel',
-    component: Channel,
+    component: () => import('@/views/base/channel/index.vue'),
     meta: {
       title: '渠道管理',
     },
@@ -163,7 +131,7 @@ const asyncRoutes = [
   {
     path: '/check/list',
     name: 'List',
-    component: List,
+    component: () => import('@/views/List/index.vue'),
     meta: {
       title: '入住列表',
     },
@@ -171,7 +139,7 @@ const asyncRoutes = [
   {
     path: '/order/list',
     name: 'OrderList',
-    component: OrderList,
+    component: () => import('@/views/order/OrderList.vue'),
     meta: {
       title: '订单列表',
     },
@@ -179,7 +147,7 @@ const asyncRoutes = [
   {
     path: '/member',
     name: 'MemberList',
-    component: MemberList,
+    component: () => import('@/views/member/MemberList.vue'),
     meta: {
       title: '会员管理',
     },
@@ -187,7 +155,7 @@ const asyncRoutes = [
   {
     path: '/room/cleaning',
     name: 'RoomCleaning',
-    component: RoomCleaning,
+    component: () => import('@/views/room/cleaning/index.vue'),
     meta: {
       title: '清洁管理',
     },
@@ -195,7 +163,7 @@ const asyncRoutes = [
   {
     path: '/notice/create',
     name: 'NoticeCreate',
-    component: NoticeCreate,
+    component: () => import('@/views/notice/create/index.vue'),
     meta: {
       title: '新增公告',
     },
@@ -203,7 +171,7 @@ const asyncRoutes = [
   {
     path: '/notice/list',
     name: 'NoticeList',
-    component: NoticeList,
+    component: () => import('@/views/notice/list/index.vue'),
     meta: {
       title: '公告列表',
     },
@@ -212,7 +180,7 @@ const asyncRoutes = [
   {
     path: '/finance/history-order',
     name: 'HistoryOrder',
-    component: HistoryOrder,
+    component: () => import('@/views/finance/historyOrder/index.vue'),
     meta: {
       title: '历史订单',
     },
@@ -220,7 +188,7 @@ const asyncRoutes = [
   {
     path: '/finance/financial-report',
     name: 'FinancialReport',
-    component: FinancialReport,
+    component: () => import('@/views/finance/financialReport/index.vue'),
     meta: {
       title: '财务报表',
     },
@@ -229,7 +197,7 @@ const asyncRoutes = [
   {
     path: '/member-consume/consume-record',
     name: 'ConsumeRecord',
-    component: ConsumeRecord,
+    component: () => import('@/views/memberConsume/consumeRecord/index.vue'),
     meta: {
       title: '消费记录',
     },
@@ -238,7 +206,7 @@ const asyncRoutes = [
   {
     path: '/goods-inventory/goods-manage',
     name: 'GoodsManage',
-    component: GoodsManage,
+    component: () => import('@/views/goodsInventory/goodsManage/index.vue'),
     meta: {
       title: '商品管理',
     },
@@ -247,7 +215,7 @@ const asyncRoutes = [
   {
     path: '/system/operation-log',
     name: 'OperationLog',
-    component: OperationLog,
+    component: () => import('@/views/system/operationLog/index.vue'),
     meta: {
       title: '操作日志',
     },

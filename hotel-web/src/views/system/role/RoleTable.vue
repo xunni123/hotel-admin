@@ -116,6 +116,8 @@ const currentTreeData = ref([])
 
 const {
   loading,
+  startLoading,
+  stopLoading,
   data,
   current,
   pageSize,
@@ -165,16 +167,26 @@ let tableOptions: Table[] = [
   },
 ]
 
-const handleQuery = () => {
+const handleQuery = async () => {
   const params = { roleName: queryForm.value.roleName }
-  select(params)
-  fetchList(params)
+  startLoading()
+  try {
+    await select(params)
+    await fetchList(params)
+  } finally {
+    stopLoading()
+  }
 }
 
-const handleReset = () => {
+const handleReset = async () => {
   queryForm.value.roleName = ''
   clearCache()
-  fetchList({ page: 1, pageSize: pageSize.value })
+  startLoading()
+  try {
+    await fetchList({ page: 1, pageSize: pageSize.value })
+  } finally {
+    stopLoading()
+  }
 }
 
 const handleDelete = (row: any) => {
@@ -249,9 +261,14 @@ const handleQueryChange = ({
   fetchList({ page, pageSize, ...queryForm.value })
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (!loadCache()) {
-    fetchList()
+    startLoading()
+    try {
+      await fetchList()
+    } finally {
+      stopLoading()
+    }
   }
 })
 </script>

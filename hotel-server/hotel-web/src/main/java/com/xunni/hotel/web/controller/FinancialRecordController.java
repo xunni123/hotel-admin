@@ -6,11 +6,9 @@ import com.xunni.hotel.entity.FinancialRecord;
 import com.xunni.hotel.web.mapper.FinancialRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,32 +31,60 @@ public class FinancialRecordController {
         return Result.success(list);
     }
 
+    @GetMapping("/{id}")
+    public Result getRecordById(@PathVariable Integer id) {
+        FinancialRecord record = financialRecordMapper.selectById(id);
+        if (record == null) {
+            return Result.error("记录不存在");
+        }
+        return Result.success(record);
+    }
+
+    @PostMapping
+    public Result addRecord(@RequestBody FinancialRecord record) {
+        record.setCreateTime(LocalDateTime.now());
+        int rows = financialRecordMapper.insert(record);
+        return rows > 0 ? Result.success(record) : Result.error("添加失败");
+    }
+
+    @PutMapping("/{id}")
+    public Result updateRecord(@PathVariable Integer id, @RequestBody FinancialRecord record) {
+        FinancialRecord exist = financialRecordMapper.selectById(id);
+        if (exist == null) {
+            return Result.error("记录不存在");
+        }
+        record.setRecordId(id);
+        int rows = financialRecordMapper.updateById(record);
+        return rows > 0 ? Result.success(record) : Result.error("更新失败");
+    }
+
+    @DeleteMapping("/{id}")
+    public Result deleteRecord(@PathVariable Integer id) {
+        int rows = financialRecordMapper.deleteById(id);
+        return rows > 0 ? Result.success("删除成功") : Result.error("删除失败");
+    }
+
     @GetMapping("/summary")
     public Result getSummary() {
         Map<String, Object> summary = new HashMap<>();
-        
-        // 总收入
+
         LambdaQueryWrapper<FinancialRecord> incomeWrapper = new LambdaQueryWrapper<>();
         incomeWrapper.eq(FinancialRecord::getType, "income");
         Double income = financialRecordMapper.selectList(incomeWrapper).stream()
                 .mapToDouble(f -> f.getAmount().doubleValue()).sum();
         summary.put("income", income);
-        
-        // 总支出
+
         LambdaQueryWrapper<FinancialRecord> expenseWrapper = new LambdaQueryWrapper<>();
         expenseWrapper.eq(FinancialRecord::getType, "expense");
         Double expense = financialRecordMapper.selectList(expenseWrapper).stream()
                 .mapToDouble(f -> f.getAmount().doubleValue()).sum();
         summary.put("expense", expense);
-        
-        // 净利润
+
         summary.put("profit", income - expense);
-        
-        // 订单数
+
         int orderCount = financialRecordMapper.selectList(incomeWrapper).size();
         summary.put("orderCount", orderCount);
-        
-        // 按支付方式统计
+
         Map<String, Double> paymentStats = new HashMap<>();
         List<FinancialRecord> records = financialRecordMapper.selectList(null);
         records.forEach(record -> {
@@ -66,7 +92,7 @@ public class FinancialRecordController {
             paymentStats.merge(method, record.getAmount().doubleValue(), Double::sum);
         });
         summary.put("paymentStats", paymentStats);
-        
+
         return Result.success(summary);
     }
 }

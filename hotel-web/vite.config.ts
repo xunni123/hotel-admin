@@ -12,10 +12,10 @@ export default defineConfig({
   plugins: [
     vue(),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({ importStyle: 'css' })],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({ importStyle: 'css' })],
     }),
   ],
   server: {
@@ -38,5 +38,18 @@ export default defineConfig({
         replacement: resolve(__dirname, 'src'),
       },
     ],
+  },
+  build: {
+    target: 'es2020',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-vue': ['vue', 'vue-router', 'pinia'],
+          'vendor-element-plus': ['element-plus'],
+          'vendor-echarts': ['echarts', 'vue-echarts'],
+          'vendor-xlsx': ['xlsx'],
+        },
+      },
+    },
   },
 })

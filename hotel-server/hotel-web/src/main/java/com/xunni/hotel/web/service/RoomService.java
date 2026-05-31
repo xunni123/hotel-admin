@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface RoomService extends IService<RoomDoto> {
 
-   List<RoomDoto> selectList(RoomDoto query);
+   List<RoomDoto> selectList(RoomDoto query, int offset, int limit);
+
+   Long countList(RoomDoto query);
 
    List<Room> selectAll();
 
