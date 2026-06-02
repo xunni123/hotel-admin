@@ -80,14 +80,13 @@ const filters: FiltersParam = reactive({
 })
 
 const handleSearch = () => {
-  console.log(filters)
   getMenuContent(filters)
     .then((res) => {
       useRoomStore.setRoomData(res.data)
       useRoomStore.setIsSearched(true)
     })
     .catch((err) => {
-      console.log(err)
+      MessagePrompt('查询失败', 'error')
     })
 }
 </script>

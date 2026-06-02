@@ -113,7 +113,7 @@ const fetchWeather = async () => {
       )
     }
   } catch (error) {
-    console.log('获取天气失败', error)
+    MessagePrompt('获取天气失败', 'error')
   } finally {
     stopLoading()
   }

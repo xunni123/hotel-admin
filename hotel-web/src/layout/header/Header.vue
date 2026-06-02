@@ -66,6 +66,7 @@ const router = useRouter()
 const loginStore = useLoginStore()
 
 import avatarImg from '@/assets/avatar.jpg'
+import { MessagePrompt } from '@/utils/message'
 
 const avatarUrl = ref(avatarImg)
 const title = ref('欢迎来到酒店后台')
@@ -75,13 +76,14 @@ const userId = Number(loginStore.userId)
 const passwordDrawerVisible = ref(false)
 
 const handlePasswordSuccess = () => {
-  console.log('密码修改成功')
+  passwordDrawerVisible.value = false
+  MessagePrompt('密码修改成功', 'success')
 }
 
+// 右侧功能判断
 const handleCommand = async (command: string) => {
   switch (command) {
     case 'logout':
-      console.log('退出登录')
       const response = await loginStore.logoutAction()
       if (response) {
         router.push('/login')

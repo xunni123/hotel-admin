@@ -33,8 +33,10 @@ const tabsStore = useTabsStore()
 const router = useRouter()
 const route = useRoute()
 
+// 当前tab
 const activeTab = ref('')
 
+// 点击路由后的tab
 const setActiveTab = () => {
   activeTab.value = route.path
 }
@@ -43,6 +45,7 @@ const tabList = computed(() => {
   return tabsStore.getTab
 })
 
+// 添加到标签页
 const addTab = () => {
   const { path, meta } = route
   if (path === '/' || path === '/dashboard') {
@@ -57,6 +60,8 @@ const addTab = () => {
   }
   tabsStore.addTab(tabs)
 }
+
+// 关闭tab
 const removeTab = (targetName: TabPaneName) => {
   if (targetName === HOME_TAB.path) return
   const tabs = tabList.value
@@ -91,6 +96,7 @@ const beforeRefresh = () => {
   }
 }
 
+// 监听路由变化
 watch(
   () => route.path,
   () => {

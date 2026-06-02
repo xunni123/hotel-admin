@@ -20,21 +20,7 @@
           <el-button @click="handleReset">重置</el-button>
         </div>
       </div>
-      <MyTable
-        :loading="loading"
-        ref="memberTableRef"
-        :data="data"
-        :options="tableOptions"
-        :editIcon="'Edit'"
-        :canEdit="
-          loginStore.permissions.memberManagement &&
-          loginStore.permissions.canEdit
-        "
-        @confirm="confirm"
-        @cancel="cancel"
-        @row-save="handleSaveRow"
-        @row-cancel="handleRowCacel"
-      >
+      <MyTable :loading="loading" :data="data" :options="tableOptions">
         <template #memberNo="{ scope }">
           <div style="display: flex; align-items: center">
             <el-icon><CaretRight /></el-icon>
@@ -97,14 +83,16 @@ import Pagination from '@/components/Pagination.vue'
 import MyDialog from '@/components/MyDialog.vue'
 import MemberContent from './MemberContent.vue'
 import MemberDrawer from './MemberDrawer.vue'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import type { Table } from '@/types'
 import * as memberApi from '@/api/member'
 import { useTable } from '@/composables/role/useRole'
 import { MessagePrompt } from '@/utils/message'
 import { useLoginStore } from '@/store/login'
+import { useRoute } from 'vue-router'
 
 const loginStore = useLoginStore()
+const route = useRoute()
 
 const visible = ref(false)
 const drawerVisible = ref(false)
@@ -136,12 +124,10 @@ const queryForm = reactive({
   searchText: '',
 })
 
-const memberTableRef = ref<InstanceType<typeof MyTable>>()
-
 const tableOptions: Table[] = [
   { type: 'selection', align: 'center' },
   { label: '会员编号', prop: 'memberNo', align: 'left', slot: 'memberNo' },
-  { label: '姓名', prop: 'name', align: 'left', editable: true },
+  { label: '姓名', prop: 'name', align: 'left' },
   { label: '手机号', prop: 'phone', align: 'left' },
   { label: '会员等级', prop: 'level', align: 'center' },
   { label: '积分', prop: 'points', align: 'right' },
@@ -169,7 +155,11 @@ const handleQuery = () => {
     const memberNo = item.memberNo?.toLowerCase() || ''
     const search = searchText.toLowerCase()
 
-    return name.includes(search) || phone.includes(search) || memberNo.includes(search)
+    return (
+      name.includes(search) ||
+      phone.includes(search) ||
+      memberNo.includes(search)
+    )
   })
 
   if (filteredData.length > 0) {
@@ -212,24 +202,6 @@ const handleCancel = () => {
   visible.value = false
 }
 
-const startRowEdit = (rowIndex: number) => {
-  memberTableRef.value?.startEdit(rowIndex)
-}
-
-const handleSaveRow = ({ rowIdx, newRow, oldRow }: any) => {
-  updateItem(rowIdx, newRow, oldRow, (row: any) => row.memberId)
-}
-
-const handleRowCacel = ({ rowIdx, oldRow }: any) => {
-  console.log('取消编辑', rowIdx)
-}
-
-const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
-  updateItem(Idx, row, data.value[Idx], (row: any) => row.memberId)
-}
-
-const cancel = ({ row, prop, oldVal }: any) => {}
-
 const handleQueryChange = ({
   page,
   pageSize,
@@ -240,9 +212,25 @@ const handleQueryChange = ({
   fetchList({ page, pageSize })
 }
 
+let routeWatcher: ReturnType<typeof watch>
+
 onMounted(() => {
   clearCache()
   fetchList()
+
+  routeWatcher = watch(
+    () => route.path,
+    () => {
+      clearCache()
+      fetchList()
+    },
+  )
+})
+
+onUnmounted(() => {
+  if (routeWatcher) {
+    routeWatcher()
+  }
 })
 </script>
 

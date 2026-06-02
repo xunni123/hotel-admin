@@ -13,7 +13,9 @@ import { ref, watch } from 'vue'
 import avatarImg from '@/assets/avatar.jpg'
 import { TITLE_SECOND } from '@/global/title'
 
+// 头像地址
 const avatarUrl = ref(avatarImg)
+
 
 const version = ref('v1.0.0')
 

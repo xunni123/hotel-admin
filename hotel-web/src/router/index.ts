@@ -5,7 +5,7 @@ import { setupAuth } from './auth'
 import 'nprogress/nprogress.css'
 import type { RouteRecordRaw } from 'vue-router'
 
-// Layout is always needed (shell), so eager import is correct
+// 按需引入组件
 import Layout from '@/layout/index.vue'
 const routes: RouteRecordRaw[] = [
   {
@@ -222,6 +222,7 @@ const asyncRoutes = [
   },
 ]
 
+// 动态路由
 export function addRoutes(menus: Menus[]) {
   const hasRouteByPath = (path: string) => {
     return router.getRoutes().some((route) => route.path === path)

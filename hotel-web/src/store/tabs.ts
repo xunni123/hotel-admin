@@ -27,6 +27,8 @@ function normalizeTabOrder(list: Tab[]): Tab[] {
   return [homeTab, ...rest]
 }
 
+const MAX_TABS = 8
+
 export const useTabsStore = defineStore('tabs', {
   state: (): TabState => ({
     tabList: [],
@@ -42,10 +44,18 @@ export const useTabsStore = defineStore('tabs', {
         this.tabList = normalizeTabOrder(this.tabList)
         return
       }
+      
+      if (this.tabList.length >= MAX_TABS) {
+        this.tabList = this.tabList.slice(0, MAX_TABS - 1)
+      }
+      
       this.tabList.push(tab)
       this.tabList = normalizeTabOrder(this.tabList)
     },
     setTabList(list: Tab[]) {
+      if (list.length > MAX_TABS) {
+        list = list.slice(0, MAX_TABS)
+      }
       this.tabList = normalizeTabOrder(list)
     },
   },

@@ -20,21 +20,7 @@
           <el-button @click="handleReset">重置</el-button>
         </div>
       </div>
-      <MyTable
-        :loading="loading"
-        ref="checkinTableRef"
-        :data="data"
-        :options="tableOptions"
-        :editIcon="'Edit'"
-        :canEdit="
-          loginStore.permissions.roomManagement &&
-          loginStore.permissions.canEdit
-        "
-        @confirm="confirm"
-        @cancel="cancel"
-        @row-save="handleSaveRow"
-        @row-cancel="handleRowCacel"
-      >
+      <MyTable :loading="loading" :data="data" :options="tableOptions">
         <template #roomNumber="{ scope }">
           <div style="display: flex; align-items: center">
             <el-icon><CaretRight /></el-icon>
@@ -45,7 +31,7 @@
         <template #action="{ scope }">
           <el-button
             size="small"
-            @click="startRowEdit(scope.$index)"
+            @click="handleEdit(scope.row)"
             :disabled="
               !loginStore.permissions.roomManagement ||
               !loginStore.permissions.canEdit
@@ -96,6 +82,13 @@
       :checkout-data="checkoutData"
       @success="handleCheckoutSuccess"
     />
+
+    <!-- 编辑入住信息弹窗 -->
+    <CheckinDrawer
+      v-model="drawerVisible"
+      :checkin-data="editCheckinData"
+      @success="handleDrawerSuccess"
+    />
   </div>
 </template>
 
@@ -105,18 +98,21 @@ import Pagination from '@/components/Pagination.vue'
 import MyDialog from '@/components/MyDialog.vue'
 import CheckinContent from './CheckinContent.vue'
 import CheckoutDialog from './CheckoutDialog.vue'
-import { onMounted, reactive, ref } from 'vue'
+import CheckinDrawer from './CheckinDrawer.vue'
+import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import type { Table } from '@/types'
 import * as checkinApi from '@/api/room'
 import { useTable } from '@/composables/role/useRole'
 import { MessagePrompt } from '@/utils/message'
 import { useLoginStore } from '@/store/login'
 import { useCheckinStore } from '@/store/checkin'
+import { useRoute } from 'vue-router'
 
 const loginStore = useLoginStore()
 const checkinStore = useCheckinStore()
+const route = useRoute()
 
-const visible = ref(checkinStore.isDetailVisible)
+const visible = ref(false)
 
 const {
   loading,
@@ -141,10 +137,12 @@ const {
 )
 
 const queryForm = reactive({
-  searchText: checkinStore.searchText,
+  searchText: '',
 })
 
-const checkinTableRef = ref<InstanceType<typeof MyTable>>()
+// drawer
+const drawerVisible = ref(false)
+const editCheckinData = ref<any>(null)
 
 const tableOptions: Table[] = [
   { type: 'selection', align: 'center' },
@@ -207,7 +205,7 @@ const handleDelete = (row: any) => {
 }
 
 // 存储选中的入住详情
-const selectedOrder = ref<any>(checkinStore.selectedOrder)
+const selectedOrder = ref<any>(null)
 
 // 退房相关
 const checkoutVisible = ref(false)
@@ -241,23 +239,16 @@ const handleCancel = () => {
   checkinStore.closeDetail()
 }
 
-const startRowEdit = (rowIndex: number) => {
-  checkinTableRef.value?.startEdit(rowIndex)
+// 编辑入住信息
+const handleEdit = (row: any) => {
+  editCheckinData.value = row
+  drawerVisible.value = true
 }
 
-const handleSaveRow = ({ rowIdx, newRow, oldRow }: any) => {
-  updateItem(rowIdx, newRow, oldRow, (row: any) => row.roomId)
+// drawer 成功回调
+const handleDrawerSuccess = async () => {
+  await fetchList()
 }
-
-const handleRowCacel = ({ rowIdx, oldRow }: any) => {
-  console.log('取消编辑', rowIdx)
-}
-
-const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
-  updateItem(Idx, row, data.value[Idx], (row: any) => row.roomId)
-}
-
-const cancel = ({ row, prop, oldVal }: any) => {}
 
 const handleQueryChange = ({
   page,
@@ -269,6 +260,8 @@ const handleQueryChange = ({
   fetchList({ page, pageSize })
 }
 
+let routeWatcher: ReturnType<typeof watch>
+
 onMounted(() => {
   clearCache()
   fetchList()
@@ -277,6 +270,20 @@ onMounted(() => {
   if (checkinStore.isSearched && checkinStore.checkinData.length > 0) {
     data.value = checkinStore.checkinData
     total.value = checkinStore.checkinData.length
+  }
+
+  routeWatcher = watch(
+    () => route.path,
+    () => {
+      clearCache()
+      fetchList()
+    },
+  )
+})
+
+onUnmounted(() => {
+  if (routeWatcher) {
+    routeWatcher()
   }
 })
 </script>

@@ -12,19 +12,18 @@
           />
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
+          <el-button
+            type="primary"
+            @click="handleAdd"
+            :disabled="
+              !loginStore.permissions.roleManagement ||
+              !loginStore.permissions.canAdd
+            "
+            >新增角色</el-button
+          >
         </div>
       </div>
-      <MyTable
-        :loading="loading"
-        ref="roleTableRef"
-        :data="data"
-        :options="tableOptions"
-        :editIcon="'Edit'"
-        @confirm="confirm"
-        @cancel="cancel"
-        @row-save="handleSaveRow"
-        @row-cancel="handleRowCacel"
-      >
+      <MyTable :loading="loading" :data="data" :options="tableOptions">
         <template #date="{ scope }">
           <div style="display: flex; align-items: center">
             <el-icon><CaretRight /></el-icon>
@@ -34,7 +33,7 @@
         <template #action="{ scope }">
           <el-button
             size="small"
-            @click="startRowEdit(scope.$index)"
+            @click="handleEdit(scope.row)"
             :disabled="
               !loginStore.permissions.roleManagement ||
               !loginStore.permissions.canEdit
@@ -87,6 +86,14 @@
         @success="handlePermissionSuccess"
       />
     </MyDrawer>
+
+    <!-- 编辑/新增角色弹窗 -->
+    <RoleDrawer
+      v-model="drawerVisible"
+      :role-data="editRoleData"
+      :is-edit="isEdit"
+      @success="handleDrawerSuccess"
+    />
   </div>
 </template>
 
@@ -104,6 +111,7 @@ import { MessagePrompt } from '@/utils/message'
 import { useLoginStore } from '@/store/login'
 import TreeContent from './TreeContent.vue'
 import { roleTreeStore } from '@/store/roleTree'
+import RoleDrawer from './RoleDrawer.vue'
 
 const roleStore = roleTreeStore()
 const loginStore = useLoginStore()
@@ -113,6 +121,11 @@ const attributeVisible = ref(false)
 // 权限id
 const currentRoleId = ref(0)
 const currentTreeData = ref([])
+
+// drawer
+const drawerVisible = ref(false)
+const isEdit = ref(false)
+const editRoleData = ref<any>(null)
 
 const {
   loading,
@@ -140,7 +153,6 @@ const {
   { cacheKey: 'role_table' },
 )
 
-const roleTableRef = ref<InstanceType<typeof MyTable>>()
 const queryForm = ref({
   roleName: '',
 })
@@ -149,13 +161,12 @@ const queryForm = ref({
 let tableOptions: Table[] = [
   { label: '角色ID', prop: 'roleId', align: 'left', slot: 'date' },
   { label: '角色Key', prop: 'roleKey', align: 'left' },
-  { label: '角色名', prop: 'roleName', align: 'left', editable: true },
+  { label: '角色名', prop: 'roleName', align: 'left' },
   { label: '排序', prop: 'sortOrder', align: 'left' },
   {
     label: '描述',
     prop: 'description',
     align: 'left',
-    editable: true,
   },
   { label: '状态', prop: 'status', align: 'left' },
   {
@@ -196,7 +207,11 @@ const handleDelete = (row: any) => {
   ) {
     MessagePrompt('你没有权限', 'warning')
   } else {
-    deleteItem(row, (row) => row.roleName)
+    deleteItem(
+      row,
+      (row) => row.roleId,
+      (row) => row.roleName,
+    )
   }
 }
 
@@ -213,7 +228,6 @@ const handleAttribute = async (row: any) => {
   currentRoleId.value = row.roleId
   const res = await getRoleIdTree(row.roleId)
   currentTreeData.value = res.data
-  console.log(currentTreeData)
 }
 
 // success
@@ -228,27 +242,29 @@ const handleDrawerClose = () => {
   currentTreeData.value = []
 }
 
-const startRowEdit = (rowIndex: number) => {
-  roleTableRef.value?.startEdit(rowIndex)
+// 新增角色
+const handleAdd = () => {
+  isEdit.value = false
+  editRoleData.value = null
+  drawerVisible.value = true
 }
 
-//行确认
-const handleSaveRow = ({ rowIdx, newRow, oldRow }: any) => {
-  updateItem(rowIdx, newRow, oldRow, (row: any) => row.roleId)
+// 编辑角色
+const handleEdit = (row: any) => {
+  isEdit.value = true
+  editRoleData.value = row
+  drawerVisible.value = true
 }
 
-//行取消
-const handleRowCacel = ({ rowIdx, oldRow }: any) => {
-  console.log('取消编辑', rowIdx)
+// drawer 成功回调
+const handleDrawerSuccess = async () => {
+  startLoading()
+  try {
+    await fetchList({ page: current.value, pageSize: pageSize.value })
+  } finally {
+    stopLoading()
+  }
 }
-
-//提交
-const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
-  updateItem(Idx, row, data.value[Idx], (row: any) => row.roleId)
-}
-
-//取消
-const cancel = ({ row, prop, oldVal }: any) => {}
 
 //分页
 const handleQueryChange = ({

@@ -8,6 +8,10 @@ export interface PermissionDTO {
   memberManagement: boolean
   reportManagement: boolean
   financialManagement: boolean
+  operationLogManagement: boolean
+  noticeManagement: boolean
+  goodsManagement: boolean
+  canAdd: boolean
   canEdit: boolean
   canDelete: boolean
   canAssignPermission: boolean

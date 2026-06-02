@@ -118,7 +118,7 @@ import { ref, reactive, onMounted } from 'vue'
 import MyTable from '@/components/MyTable.vue'
 import Pagination from '@/components/Pagination.vue'
 import Card from '@/components/Card.vue'
-import { ElMessage } from 'element-plus'
+import { MessagePrompt } from '@/utils/message'
 import type { Table } from '@/types'
 import * as logApi from '@/api/operationLog'
 import type { OperationLog } from '@/api/operationLog'
@@ -222,7 +222,7 @@ const fetchList = async () => {
       total.value = data.value.length
     }
   } catch (error) {
-    ElMessage.error('获取数据失败')
+    MessagePrompt('获取数据失败', 'error')
   } finally {
     stopLoading()
   }

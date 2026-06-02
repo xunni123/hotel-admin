@@ -38,6 +38,10 @@ public class PermissionServiceImpl implements PermissionService {
                 true, // memberManagement
                 true, // reportManagement
                 true, // financialManagement
+                true, // operationLogManagement
+                true, // noticeManagement
+                true, // goodsManagement
+                true, // canAdd
                 true, // canEdit
                 true, // canDelete
                 true // canAssignPermission
@@ -55,6 +59,10 @@ public class PermissionServiceImpl implements PermissionService {
                 true, // memberManagement
                 true, // reportManagement
                 true, // financialManagement
+                true, // operationLogManagement
+                true, // noticeManagement
+                true, // goodsManagement
+                true, // canAdd
                 true, // canEdit
                 true, // canDelete
                 true // canAssignPermission
@@ -72,6 +80,10 @@ public class PermissionServiceImpl implements PermissionService {
                 true, // memberManagement
                 true, // reportManagement
                 false, // financialManagement
+                false, // operationLogManagement
+                true, // noticeManagement
+                true, // goodsManagement
+                true, // canAdd
                 true, // canEdit
                 false, // canDelete
                 false // canAssignPermission
@@ -89,6 +101,10 @@ public class PermissionServiceImpl implements PermissionService {
                 true, // memberManagement
                 false, // reportManagement
                 false, // financialManagement
+                false, // operationLogManagement
+                false, // noticeManagement
+                true, // goodsManagement
+                true, // canAdd
                 true, // canEdit
                 false, // canDelete
                 false // canAssignPermission
@@ -106,6 +122,10 @@ public class PermissionServiceImpl implements PermissionService {
                 true, // memberManagement
                 true, // reportManagement
                 false, // financialManagement
+                false, // operationLogManagement
+                false, // noticeManagement
+                false, // goodsManagement
+                true, // canAdd
                 true, // canEdit
                 false, // canDelete
                 false // canAssignPermission
@@ -123,6 +143,10 @@ public class PermissionServiceImpl implements PermissionService {
                 false, // memberManagement
                 false, // reportManagement
                 false, // financialManagement
+                false, // operationLogManagement
+                false, // noticeManagement
+                false, // goodsManagement
+                false, // canAdd
                 false, // canEdit
                 false, // canDelete
                 false // canAssignPermission
@@ -140,6 +164,10 @@ public class PermissionServiceImpl implements PermissionService {
                 false, // memberManagement
                 true, // reportManagement
                 true, // financialManagement
+                true, // operationLogManagement
+                false, // noticeManagement
+                false, // goodsManagement
+                true, // canAdd
                 true, // canEdit
                 false, // canDelete
                 false // canAssignPermission
@@ -157,6 +185,10 @@ public class PermissionServiceImpl implements PermissionService {
                 true, // memberManagement
                 true, // reportManagement
                 true, // financialManagement
+                true, // operationLogManagement
+                true, // noticeManagement
+                true, // goodsManagement
+                false, // canAdd
                 false, // canEdit
                 false, // canDelete
                 false // canAssignPermission
@@ -174,6 +206,10 @@ public class PermissionServiceImpl implements PermissionService {
                 false, // memberManagement
                 false, // reportManagement
                 false, // financialManagement
+                false, // operationLogManagement
+                false, // noticeManagement
+                false, // goodsManagement
+                false, // canAdd
                 false, // canEdit
                 false, // canDelete
                 false // canAssignPermission
@@ -191,6 +227,10 @@ public class PermissionServiceImpl implements PermissionService {
                 false, // memberManagement
                 false, // reportManagement
                 false, // financialManagement
+                false, // operationLogManagement
+                false, // noticeManagement
+                false, // goodsManagement
+                false, // canAdd
                 false, // canEdit
                 false, // canDelete
                 false // canAssignPermission

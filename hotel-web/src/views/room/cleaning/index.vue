@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import CleaningMenu from './CleaningMenu.vue'
 import CleaningTable from './CleaningTable.vue'
 import { MessagePrompt } from '@/utils/message'
@@ -30,17 +30,29 @@ const handleRefreshCleaners = () => {
   menuRef.value?.loadCleaners()
 }
 
+let assignTimer: ReturnType<typeof setTimeout> | null = null
+
 const handleAssign = (cleaner: any, roomIds: number[]) => {
   tableRef.value?.refreshRooms()
   menuRef.value?.loadCleaners()
 
-  setTimeout(() => {
+  if (assignTimer) {
+    clearTimeout(assignTimer)
+  }
+  assignTimer = setTimeout(() => {
     MessagePrompt(
       `已派单给 ${cleaner.cleanerName}，共 ${roomIds.length} 间房间`,
       'success',
     )
   }, 15000)
 }
+
+onUnmounted(() => {
+  if (assignTimer) {
+    clearTimeout(assignTimer)
+    assignTimer = null
+  }
+})
 </script>
 
 <style lang="scss" scoped>

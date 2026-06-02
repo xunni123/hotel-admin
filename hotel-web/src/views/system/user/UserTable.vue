@@ -12,6 +12,15 @@
           />
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
+          <el-button
+            type="primary"
+            @click="handleAdd"
+            :disabled="
+              !loginStore.permissions.userManagement ||
+              !loginStore.permissions.canAdd
+            "
+            >新增用户</el-button
+          >
         </div>
       </div>
 
@@ -20,11 +29,6 @@
         ref="userTableRef"
         :data="data"
         :options="tableOptions"
-        :editIcon="'Edit'"
-        @confirm="confirm"
-        @cancel="cancel"
-        @row-save="handleSaveRow"
-        @row-cancel="handleRowCacel"
       >
         <template #date="{ scope }">
           <div style="display: flex; align-items: center">
@@ -32,10 +36,17 @@
             <span style="margin-left: 10px">{{ scope.row.userId }}</span>
           </div>
         </template>
+        <template #avatar="{ scope }">
+          <el-image
+            :src="scope.row.avatar || defaultAvatar"
+            fit="cover"
+            style="width: 40px; height: 40px; border-radius: 50%"
+          />
+        </template>
         <template #action="{ scope }">
           <el-button
             size="small"
-            @click="startRowEdit(scope.$index)"
+            @click="handleEdit(scope.row)"
             :disabled="
               !loginStore.permissions.userManagement ||
               !loginStore.permissions.canEdit
@@ -61,6 +72,13 @@
         @size-change="handleSizeChange"
       />
     </Card>
+
+    <UserDrawer
+      v-model="drawerVisible"
+      :user-data="editUserData"
+      :is-edit="isEdit"
+      @success="handleDrawerSuccess"
+    />
   </div>
 </template>
 
@@ -70,10 +88,14 @@ import { onMounted, ref } from 'vue'
 import * as usersApi from '@/api/user/index'
 import { useTable } from '@/composables/role/useRole'
 import Pagination from '@/components/Pagination.vue'
-import type { Users, Table } from '@/types'
+import type { Table } from '@/types'
+import avatarImg from '@/assets/avatar.jpg'
+import UserDrawer from './UserDrawer.vue'
 
 import { useLoginStore } from '@/store/login'
 import { MessagePrompt } from '@/utils/message'
+
+const defaultAvatar = avatarImg
 const loginStore = useLoginStore()
 
 const {
@@ -88,7 +110,6 @@ const {
   handleSizeChange,
   fetchList,
   select,
-  updateItem,
   deleteItem,
   loadCache,
   clearCache,
@@ -101,13 +122,16 @@ const {
       return usersApi.getAllUser()
     },
     select: (params: any) => usersApi.getUserByUsername(params),
-    update: (id: string | number, data: Users) => usersApi.updateUser(id, data),
     delete: (id: string | number) => usersApi.deleteUser(id),
   },
   { cacheKey: 'user_table' },
 )
 
 const userTableRef = ref<InstanceType<typeof MyTable>>()
+
+const drawerVisible = ref(false)
+const editUserData = ref<any>(null)
+const isEdit = ref(false)
 
 const tableOptions: Table[] = [
   { label: '用户ID', prop: 'userId', align: 'left', slot: 'date' },
@@ -117,10 +141,10 @@ const tableOptions: Table[] = [
     label: '头像',
     prop: 'avatar',
     align: 'center',
-    showOverflowTooltip: true,
-    editable: true,
+    slot: 'avatar',
+    showOverflowTooltip: false,
   },
-  { label: '状态', prop: 'status', align: 'left', editable: true },
+  { label: '状态', prop: 'status', align: 'left' },
   { label: '操作', prop: 'actions', actions: true, align: 'center' },
 ]
 
@@ -150,20 +174,16 @@ const handleReset = async () => {
   }
 }
 
-const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
-  updateItem(Idx, row, data.value[Idx], (row: any) => row.userId)
+const handleAdd = () => {
+  isEdit.value = false
+  editUserData.value = null
+  drawerVisible.value = true
 }
 
-const cancel = () => {}
-
-const handleSaveRow = ({ rowIdx, newRow, oldRow }: any) => {
-  updateItem(rowIdx, newRow, oldRow, (row) => row.userId)
-}
-
-const handleRowCacel = () => {}
-
-const startRowEdit = (rowIndex: number) => {
-  userTableRef.value?.startEdit(rowIndex)
+const handleEdit = (row: any) => {
+  isEdit.value = true
+  editUserData.value = row
+  drawerVisible.value = true
 }
 
 const handleDelete = (row: any) => {
@@ -178,6 +198,16 @@ const handleDelete = (row: any) => {
       (row: any) => row.userId,
       (row: any) => row.username,
     )
+  }
+}
+
+const handleDrawerSuccess = async () => {
+  clearCache()
+  startLoading()
+  try {
+    await fetchList()
+  } finally {
+    stopLoading()
   }
 }
 

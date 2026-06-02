@@ -58,8 +58,25 @@
           </span>
         </template>
         <template #action="{ scope }">
-          <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            size="small"
+            @click="handleEdit(scope.row)"
+            :disabled="
+              !loginStore.permissions.memberManagement ||
+              !loginStore.permissions.canEdit
+            "
+            >编辑</el-button
+          >
+          <el-button
+            size="small"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            :disabled="
+              !loginStore.permissions.memberManagement ||
+              !loginStore.permissions.canDelete
+            "
+            >删除</el-button
+          >
         </template>
       </MyTable>
 
@@ -78,40 +95,68 @@
       :title="isEdit ? '编辑记录' : '新增记录'"
       width="550px"
     >
-      <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
+      <el-form
+        ref="formRef"
+        :model="formData"
+        :rules="rules"
+        label-width="100px"
+      >
         <el-form-item label="会员号" prop="memberNo">
           <el-input v-model="formData.memberNo" placeholder="请输入会员号" />
         </el-form-item>
         <el-form-item label="会员姓名" prop="memberName">
-          <el-input v-model="formData.memberName" placeholder="请输入会员姓名" />
+          <el-input
+            v-model="formData.memberName"
+            placeholder="请输入会员姓名"
+          />
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="formData.phone" placeholder="请输入手机号" />
         </el-form-item>
         <el-form-item label="消费类型" prop="type">
-          <el-select v-model="formData.type" placeholder="请选择消费类型" style="width: 100%">
+          <el-select
+            v-model="formData.type"
+            placeholder="请选择消费类型"
+            style="width: 100%"
+          >
             <el-option label="房费" value="room" />
             <el-option label="商品" value="goods" />
             <el-option label="其他" value="other" />
           </el-select>
         </el-form-item>
         <el-form-item label="消费金额" prop="amount">
-          <el-input-number v-model="formData.amount" :min="0" :precision="2" style="width: 100%" />
+          <el-input-number
+            v-model="formData.amount"
+            :min="0"
+            :precision="2"
+            style="width: 100%"
+          />
         </el-form-item>
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="积分变动" prop="pointsChange">
-              <el-input-number v-model="formData.pointsChange" style="width: 100%" />
+              <el-input-number
+                v-model="formData.pointsChange"
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="当前积分" prop="currentPoints">
-              <el-input-number v-model="formData.currentPoints" style="width: 100%" />
+              <el-input-number
+                v-model="formData.currentPoints"
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入备注" />
+          <el-input
+            v-model="formData.remark"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入备注"
+          />
         </el-form-item>
         <el-form-item label="操作人" prop="operator">
           <el-input v-model="formData.operator" placeholder="请输入操作人" />
@@ -119,7 +164,9 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitting"
+          >确定</el-button
+        >
       </template>
     </el-dialog>
   </div>
@@ -130,13 +177,15 @@ import { ref, reactive, onMounted } from 'vue'
 import MyTable from '@/components/MyTable.vue'
 import Pagination from '@/components/Pagination.vue'
 import Card from '@/components/Card.vue'
-import { ElMessage, ElMessageBox, ElForm } from 'element-plus'
+import { ElMessageBox, ElForm } from 'element-plus'
 import { MessagePrompt } from '@/utils/message'
 import type { Table } from '@/types'
 import * as consumeApi from '@/api/memberConsume'
 import type { MemberConsume } from '@/api/memberConsume'
 import { useLoading } from '@/composables/useLoading'
+import { useLoginStore } from '@/store/login'
 
+const loginStore = useLoginStore()
 const { loading, startLoading, stopLoading } = useLoading(500)
 const allData = ref<any[]>([])
 const data = ref<any[]>([])
@@ -181,21 +230,40 @@ const tableOptions: Table[] = [
   { label: '手机号', prop: 'phone', align: 'center' },
   { label: '消费类型', prop: 'type', align: 'center', slot: 'type' },
   { label: '消费金额', prop: 'amount', align: 'right', slot: 'amount' },
-  { label: '积分变动', prop: 'pointsChange', align: 'center', slot: 'pointsChange' },
+  {
+    label: '积分变动',
+    prop: 'pointsChange',
+    align: 'center',
+    slot: 'pointsChange',
+  },
   { label: '当前积分', prop: 'currentPoints', align: 'center' },
   { label: '备注', prop: 'remark', align: 'left' },
   { label: '操作人', prop: 'operator', align: 'center' },
   { label: '消费时间', prop: 'createTime', align: 'center' },
-  { label: '操作', prop: 'actions', actions: true, align: 'center', width: 160 },
+  {
+    label: '操作',
+    prop: 'actions',
+    actions: true,
+    align: 'center',
+    width: 160,
+  },
 ]
 
 const getConsumeType = (type: string) => {
-  const map: Record<string, string> = { room: 'primary', goods: 'success', other: 'info' }
+  const map: Record<string, string> = {
+    room: 'primary',
+    goods: 'success',
+    other: 'info',
+  }
   return map[type] || 'info'
 }
 
 const getConsumeTypeText = (type: string) => {
-  const map: Record<string, string> = { room: '房费', goods: '商品', other: '其他' }
+  const map: Record<string, string> = {
+    room: '房费',
+    goods: '商品',
+    other: '其他',
+  }
   return map[type] || type
 }
 
@@ -213,7 +281,7 @@ const fetchList = async () => {
       total.value = data.value.length
     }
   } catch (error) {
-    ElMessage.error('获取数据失败')
+    MessagePrompt('获取数据失败', 'error')
   } finally {
     stopLoading()
   }
@@ -222,9 +290,17 @@ const fetchList = async () => {
 const handleAdd = () => {
   isEdit.value = false
   Object.assign(formData, {
-    consumeId: null, memberId: null, memberNo: '', memberName: '',
-    phone: '', type: '', amount: 0, pointsChange: 0, currentPoints: 0,
-    remark: '', operator: '',
+    consumeId: null,
+    memberId: null,
+    memberNo: '',
+    memberName: '',
+    phone: '',
+    type: '',
+    amount: 0,
+    pointsChange: 0,
+    currentPoints: 0,
+    remark: '',
+    operator: '',
   })
   dialogVisible.value = true
 }
@@ -249,7 +325,9 @@ const handleEdit = (row: any) => {
 
 const handleDelete = (row: any) => {
   ElMessageBox.confirm(`确定要删除该消费记录吗？`, '提示', {
-    confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning',
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
   })
     .then(async () => {
       try {
@@ -287,7 +365,10 @@ const handleSubmit = async () => {
 
         let result
         if (isEdit.value) {
-          result = await consumeApi.updateConsume(formData.consumeId!, submitData)
+          result = await consumeApi.updateConsume(
+            formData.consumeId!,
+            submitData,
+          )
         } else {
           result = await consumeApi.addConsume(submitData)
         }

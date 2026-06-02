@@ -53,58 +53,52 @@ const onCancel = () => {
 }
 </script>
 
-<style lang="scss">
-.el-dialog {
+<style lang="scss" scoped>
+:deep(.el-dialog) {
   border-radius: 10px !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
-  .el-dialog__header {
-    padding: 16px 20px !important;
-    border-bottom: 1px solid #e9ecef;
-    margin-right: 0 !important;
-    text-align: center;
-    .el-dialog__title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1e293b;
-    }
+}
 
-    .el-dialog__headerbtn {
-      top: 18px;
-      right: 20px;
-      width: 28px;
-      height: 28px;
+:deep(.el-dialog__header) {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #e9ecef;
+  margin-right: 0 !important;
+  text-align: center;
+}
 
-      .el-dialog__close {
-        font-size: 18px;
-        color: #94a3b8;
+:deep(.el-dialog__title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
 
-        &:hover {
-          color: #0f172a;
-        }
-      }
-    }
-  }
+:deep(.el-dialog__headerbtn) {
+  top: 18px;
+  right: 20px;
+  width: 28px;
+  height: 28px;
+}
 
-  .el-dialog__body {
-    padding: 20px !important;
-    color: #334155;
-  }
+:deep(.el-dialog__close) {
+  font-size: 18px;
+  color: #94a3b8;
 
-  .el-dialog__footer {
-    padding: 12px 20px !important;
-    border-top: 1px solid #e9ecef;
+  &:hover {
+    color: #0f172a;
   }
 }
 
-.el-overlay {
-  backdrop-filter: blur(1px);
-}
-.el-dialog__body {
+:deep(.el-dialog__body) {
   padding: 20px !important;
   color: #334155;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+:deep(.el-dialog__footer) {
+  padding: 12px 20px !important;
+  border-top: 1px solid #e9ecef;
 }
 
 .dialog-content {

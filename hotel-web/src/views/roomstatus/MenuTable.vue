@@ -212,6 +212,7 @@ const getStatusText = (status: string) => {
     occupied_clean: '入住中',
     occupied_dirty: '入住中',
     empty_dirty: '待打扫',
+    pending_cleaning: '待打扫',
     maintenance: '维修中',
     repair: '维修中',
     locked: '已锁定',
@@ -368,7 +369,8 @@ watch(
   }
 
   &.dirty,
-  &.empty_dirty {
+  &.empty_dirty,
+  &.pending_cleaning {
     background: #fc8181;
   }
 

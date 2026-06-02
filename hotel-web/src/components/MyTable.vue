@@ -1,12 +1,6 @@
 <template>
   <div class="my-table">
-    <MySkeleton
-      v-if="props.loading"
-      mode="table"
-      :rows="5"
-      :columns="skeletonColumns"
-    />
-    <el-table v-else :data="data">
+    <el-table v-loading="props.loading" :data="data">
       <template v-for="(item, index) in tableOptions">
         <el-table-column
           v-if="item.type === 'selection'"
@@ -108,7 +102,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Table } from '@/types'
-import MySkeleton from '@/components/MySkeleton.vue'
 
 const currentIndex = ref<string>('')
 const originalVal = ref<any>(null)
@@ -144,35 +137,6 @@ const tableOptions = computed(() =>
 const actionsOptions = computed(() =>
   props.options.find((item) => item.actions),
 )
-
-const skeletonColumns = computed(() => {
-  const cols: (number | string)[] = []
-  tableOptions.value
-    .filter((item) => item.type !== 'selection')
-    .forEach((item) => {
-      if (item.width) {
-        const w =
-          typeof item.width === 'number'
-            ? item.width
-            : parseInt(String(item.width))
-        cols.push(isNaN(w) ? 'auto' : w)
-      } else {
-        cols.push('auto')
-      }
-    })
-  if (actionsOptions.value) {
-    if (actionsOptions.value.width) {
-      const w =
-        typeof actionsOptions.value.width === 'number'
-          ? actionsOptions.value.width
-          : parseInt(String(actionsOptions.value.width))
-      cols.push(isNaN(w) ? 'auto' : w)
-    } else {
-      cols.push('auto')
-    }
-  }
-  return cols.length > 0 ? cols : ['auto', 'auto', 'auto', 'auto']
-})
 
 const editRowTable = (scope: any) => {
   if (rowIndex.value != -1) return

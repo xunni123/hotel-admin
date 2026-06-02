@@ -6,25 +6,31 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 import cache from '@/utils/cache.ts'
+import { getServerUrl } from '@/config/index'
 
 const { localCache } = cache
 
-// 配置 NProgress（可选，关闭微调圈）
 NProgress.configure({ showSpinner: false })
-// 请求计数器，用于处理并发请求
 let requestCount = 0
 
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: '/api',
   timeout: TIME_OUT,
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-// 请求拦截
+export const updateBaseURL = () => {
+  service.defaults.baseURL = getServerUrl()
+}
+
 service.interceptors.request.use(
   (config) => {
+    if (!config.baseURL) {
+      config.baseURL = getServerUrl()
+    }
+    
     const token = localCache.getCache(PRIMARY_TOKEN)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -42,14 +48,12 @@ service.interceptors.request.use(
   },
 )
 
-// 响应拦截
 service.interceptors.response.use(
   (response) => {
     const res = response.data
     requestCount--
     if (requestCount === 0) NProgress.done()
     
-    // 业务错误处理
     if (res.code !== 200) {
       const errorMessages: Record<number, string> = {
         400: '请求参数错误',
@@ -62,7 +66,6 @@ service.interceptors.response.use(
       const message = res.message || errorMessages[res.code] || '系统开小差了'
       MessagePrompt(message, 'error')
       
-      // 登录失效处理
       if (res.code === 401) {
         localCache.deleteCache(PRIMARY_TOKEN)
         setTimeout(() => {
@@ -76,7 +79,6 @@ service.interceptors.response.use(
     requestCount--
     if (requestCount === 0) NProgress.done()
     
-    // HTTP错误处理
     if (error.response) {
       const status = error.response.status
       const errorMessages: Record<number, string> = {
@@ -94,7 +96,6 @@ service.interceptors.response.use(
       const message = errorMessages[status] || `网络错误 [${status}]`
       MessagePrompt(message, 'error')
       
-      // 登录失效处理
       if (status === 401) {
         localCache.deleteCache(PRIMARY_TOKEN)
         setTimeout(() => {

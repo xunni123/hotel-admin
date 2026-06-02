@@ -23,11 +23,20 @@
     <template v-else-if="isCard">
       <div v-for="i in rows" :key="i" class="skeleton-card">
         <div class="skeleton-card-header">
-          <div class="skeleton-content" :style="{ width: '60%', height: '16px' }"></div>
+          <div
+            class="skeleton-content"
+            :style="{ width: '60%', height: '16px' }"
+          ></div>
         </div>
         <div class="skeleton-card-content">
-          <div class="skeleton-content" :style="{ width: '80%', height: '14px' }"></div>
-          <div class="skeleton-content" :style="{ width: '50%', height: '14px' }"></div>
+          <div
+            class="skeleton-content"
+            :style="{ width: '80%', height: '14px' }"
+          ></div>
+          <div
+            class="skeleton-content"
+            :style="{ width: '50%', height: '14px' }"
+          ></div>
         </div>
       </div>
     </template>
@@ -131,12 +140,7 @@ const getCellWidth = (col: number | string, index: number): string => {
   }
 
   .skeleton-content {
-    background: linear-gradient(
-      90deg,
-      #f0f0f0 25%,
-      #e8e8e8 50%,
-      #f0f0f0 75%
-    );
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
     background-size: 200% 100%;
   }
 
@@ -164,12 +168,7 @@ const getCellWidth = (col: number | string, index: number): string => {
   padding: 0 8px;
 
   .skeleton-content {
-    background: linear-gradient(
-      90deg,
-      #f0f0f0 25%,
-      #e8e8e8 50%,
-      #f0f0f0 75%
-    );
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     border-radius: 4px;
 
@@ -206,12 +205,7 @@ const getCellWidth = (col: number | string, index: number): string => {
   }
 
   .skeleton-content {
-    background: linear-gradient(
-      90deg,
-      #f0f0f0 25%,
-      #e8e8e8 50%,
-      #f0f0f0 75%
-    );
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     border-radius: 4px;
     animation: skeleton-loading 1.5s ease-in-out infinite;

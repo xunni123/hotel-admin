@@ -21,28 +21,17 @@
           <el-button
             type="primary"
             @click="handleCreate"
-            :disabled="!loginStore.permissions.bookingManagement"
+            :disabled="
+              !loginStore.permissions.bookingManagement ||
+              !loginStore.permissions.canAdd
+            "
           >
             新建预订
             <el-icon style="margin-left: 10px"><Plus /></el-icon>
           </el-button>
         </div>
       </div>
-      <MyTable
-        :loading="loading"
-        ref="bookingTableRef"
-        :data="data"
-        :options="tableOptions"
-        :editIcon="'Edit'"
-        :canEdit="
-          loginStore.permissions.bookingManagement &&
-          loginStore.permissions.canEdit
-        "
-        @confirm="confirm"
-        @cancel="cancel"
-        @row-save="handleSaveRow"
-        @row-cancel="handleRowCacel"
-      >
+      <MyTable :loading="loading" :data="data" :options="tableOptions">
         <template #date="{ scope }">
           <div style="display: flex; align-items: center">
             <el-icon><CaretRight /></el-icon>
@@ -53,7 +42,7 @@
         <template #action="{ scope }">
           <el-button
             size="small"
-            @click="startRowEdit(scope.$index)"
+            @click="handleEdit(scope.row)"
             :disabled="
               !loginStore.permissions.bookingManagement ||
               !loginStore.permissions.canEdit
@@ -75,16 +64,6 @@
             :disabled="!loginStore.permissions.bookingManagement"
             >详情</el-button
           >
-          <MyDialog
-            :title="'预定详情单'"
-            :visible="visible"
-            @confirm="handleConnfirm"
-            @cacel="handleCacel"
-          >
-            <template #content>
-              <DialogContent :selectedOrder="selectedOrder" />
-            </template>
-          </MyDialog>
         </template>
       </MyTable>
       <Pagination
@@ -95,9 +74,24 @@
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
+
+      <MyDialog
+        :title="'预定详情单'"
+        :visible="visible"
+        @confirm="handleConnfirm"
+        @cacel="handleCacel"
+      >
+        <template #content>
+          <DialogContent :selectedOrder="selectedOrder" />
+        </template>
+      </MyDialog>
     </Card>
 
-    <BookingDialog ref="bookingDialogRef" />
+    <BookingDialog
+      ref="bookingDialogRef"
+      :edit-data="editBookingData"
+      @success="handleDialogSuccess"
+    />
   </div>
 </template>
 
@@ -107,14 +101,16 @@ import Pagination from '@/components/Pagination.vue'
 import BookingDialog from './BookingDialog.vue'
 import MyDialog from '@/components/MyDialog.vue'
 import DialogContent from './DialogContent.vue'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import type { Table } from '@/types'
 import * as bookingApi from '@/api/booking'
 import { useTable } from '@/composables/role/useRole'
 import { MessagePrompt } from '@/utils/message'
 import { useLoginStore } from '@/store/login'
+import { useRoute } from 'vue-router'
 
 const loginStore = useLoginStore()
+const route = useRoute()
 
 const visible = ref(false)
 
@@ -127,16 +123,12 @@ const {
   handleSizeChange,
   handleCurrentChange,
   fetchList,
-  select,
-  updateItem,
-  deleteItem,
   loadCache,
   clearCache,
 } = useTable(
   {
     fetchList: (query: any) =>
       bookingApi.getAllBooking(query.page, query.pageSize),
-    update: (id: string | number, data: any) => bookingApi.updateBooking(data),
   },
   { cacheKey: 'booking_table' },
 )
@@ -145,15 +137,36 @@ const queryForm = reactive({
   orderTel: '',
 })
 
-const bookingTableRef = ref<InstanceType<typeof MyTable>>()
-const bookingDialogRef = ref(false)
+const bookingDialogRef = ref<InstanceType<typeof BookingDialog>>()
+const editBookingData = ref<any>(null)
+
+let routeWatcher: ReturnType<typeof watch>
+
+onMounted(() => {
+  clearCache()
+  fetchList()
+
+  routeWatcher = watch(
+    () => route.path,
+    () => {
+      clearCache()
+      fetchList()
+    },
+  )
+})
+
+onUnmounted(() => {
+  if (routeWatcher) {
+    routeWatcher()
+  }
+})
 
 const tableOptions: Table[] = [
   { type: 'selection', align: 'center' },
   { label: '订单编号', prop: 'orderNo', align: 'left', slot: 'date' },
   { label: '房间号', prop: 'roomNumber', align: 'left' },
   { label: '客人姓名', prop: 'guestName', align: 'left' },
-  { label: '联系电话', prop: 'guestPhone', align: 'left', editable: true },
+  { label: '联系电话', prop: 'guestPhone', align: 'left' },
   { label: '入住日期', prop: 'checkInDate', align: 'left' },
   {
     label: '订单状态',
@@ -212,24 +225,6 @@ const handleCacel = () => {
   visible.value = false
 }
 
-const startRowEdit = (rowIndex: number) => {
-  bookingTableRef.value?.startEdit(rowIndex)
-}
-
-const handleSaveRow = ({ rowIdx, newRow, oldRow }: any) => {
-  updateItem(rowIdx, newRow, oldRow, (row: any) => row.orderId)
-}
-
-const handleRowCacel = ({ rowIdx, oldRow }: any) => {
-  console.log('取消编辑', rowIdx)
-}
-
-const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
-  updateItem(Idx, row, data.value[Idx], (row: any) => row.orderId)
-}
-
-const cancel = ({ row, prop, oldVal }: any) => {}
-
 const handleQueryChange = ({
   page,
   pageSize,
@@ -242,13 +237,23 @@ const handleQueryChange = ({
 
 // 新建预定
 const handleCreate = () => {
-  bookingDialogRef.value.visible = true
+  if (bookingDialogRef.value) {
+    bookingDialogRef.value.visible = true
+  }
 }
 
-onMounted(() => {
-  clearCache()
-  fetchList()
-})
+// 编辑预订
+const handleEdit = (row: any) => {
+  editBookingData.value = row
+  if (bookingDialogRef.value) {
+    bookingDialogRef.value.visible = true
+  }
+}
+
+// 对话框成功回调
+const handleDialogSuccess = async () => {
+  await fetchList({ page: current.value, pageSize: pageSize.value })
+}
 </script>
 
 <style scoped lang="scss">

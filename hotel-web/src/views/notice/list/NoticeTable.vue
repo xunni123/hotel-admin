@@ -43,10 +43,23 @@
           <span>{{ formatDate(scope.row.createTime) }}</span>
         </template>
         <template #action="{ scope }">
-          <el-button size="small" @click="handleEdit(scope.row)"
+          <el-button
+            size="small"
+            @click="handleEdit(scope.row)"
+            :disabled="
+              !loginStore.permissions.noticeManagement ||
+              !loginStore.permissions.canEdit
+            "
             >编辑</el-button
           >
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)"
+          <el-button
+            size="small"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            :disabled="
+              !loginStore.permissions.noticeManagement ||
+              !loginStore.permissions.canDelete
+            "
             >删除</el-button
           >
         </template>
@@ -110,8 +123,10 @@ import { MessagePrompt } from '@/utils/message'
 import type { Table } from '@/types'
 import type { Announcement } from '@/api/announcement'
 import { useLoading } from '@/composables/useLoading'
+import { useLoginStore } from '@/store/login'
 
 const router = useRouter()
+const loginStore = useLoginStore()
 
 const { loading, startLoading, stopLoading } = useLoading(500)
 const data = ref<Announcement[]>([])

@@ -146,15 +146,13 @@ const startRowEdit = (rowIndex: number) => {
 }
 
 const handleSaveRow = ({ rowIdx, newRow, oldRow }: any) => {
-  console.log('保存房型:', newRow)
+  updateItem(rowIdx, newRow, oldRow, (row: any) => row.roomTypeId)
 }
 
-const handleRowCacel = ({ rowIdx, oldRow }: any) => {
-  console.log('取消编辑', rowIdx)
-}
+const handleRowCacel = ({ rowIdx, oldRow }: any) => {}
 
 const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
-  console.log('确认修改:', prop, newVal)
+  updateItem(Idx, row, data.value[Idx], (row: any) => row.roomTypeId)
 }
 
 const cancel = ({ row, prop, oldVal }: any) => {}

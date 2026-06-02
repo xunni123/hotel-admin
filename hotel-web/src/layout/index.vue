@@ -37,6 +37,7 @@ const clspStore = collapseStore()
 const { collapse } = storeToRefs(clspStore)
 const { setCollapse } = clspStore
 
+// 切换
 const toggleCollapse = () => {
   setCollapse(!collapse.value)
 }

@@ -4,7 +4,7 @@
       <el-breadcrumb-item
         :to="{ path: '/' }"
         v-for="item in tabs"
-        :key="item"
+        :key="item.path"
         >{{ item.meta.title }}</el-breadcrumb-item
       >
     </el-breadcrumb>

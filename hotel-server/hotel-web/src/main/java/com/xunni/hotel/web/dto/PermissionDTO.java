@@ -17,6 +17,10 @@ public class PermissionDTO {
     private Boolean memberManagement;
     private Boolean reportManagement;
     private Boolean financialManagement;
+    private Boolean operationLogManagement;
+    private Boolean noticeManagement;
+    private Boolean goodsManagement;
+    private Boolean canAdd;
     private Boolean canEdit;
     private Boolean canDelete;
     private Boolean canAssignPermission;

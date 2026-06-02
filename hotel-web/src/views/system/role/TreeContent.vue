@@ -154,7 +154,7 @@ getAllMenus2().then((res) => {
 
 // 分配权限
 const append = (item: any) => {
-  console.log('分配权限:', item)
+  roleStore.appendNode(item)
 }
 
 //展开/收起全部

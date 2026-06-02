@@ -1,9 +1,9 @@
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import type { TableApi } from '@/types'
 import { MessagePrompt } from '@/utils/message'
 import { updateRole, deleteRole } from '@/api/role'
-import { ElMessageBox, ElMessage } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import cache from '@/utils/cache'
 import { useLoading } from '@/composables/useLoading'
 
@@ -165,7 +165,6 @@ export const useTable = <T>(
       return false
     }
     const id = getId(newRow)
-    console.log(newRow)
 
     if (id === undefined || id === null) {
       MessagePrompt('无法获取记录ID', 'error')
@@ -199,7 +198,7 @@ export const useTable = <T>(
   ) => {
     const id = getId(row)
     if (!id) {
-      ElMessage.error('无法获取记录ID')
+      MessagePrompt('无法获取记录ID', 'error')
       return
     }
     const name = getName(row)
@@ -212,13 +211,13 @@ export const useTable = <T>(
         try {
           const res = await api.delete(id)
           if (res.code === undefined || res.code === 200) {
-            ElMessage.success('删除成功')
+            MessagePrompt('删除成功', 'success')
             await fetchList()
           } else {
-            ElMessage.error(res.message || '删除失败')
+            MessagePrompt(res.message || '删除失败', 'error')
           }
         } catch (error) {
-          ElMessage.error('删除失败，请重试')
+          MessagePrompt('删除失败，请重试', 'error')
         }
       })
       .catch(() => {})

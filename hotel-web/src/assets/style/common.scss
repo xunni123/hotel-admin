@@ -298,6 +298,38 @@ h2 {
   animation: fadeIn 0.3s ease-out;
 }
 
+// ============================================
+// ElMessageBox 确认框居中样式
+// ============================================
+.el-message-box__wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2000 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.el-message-box {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 2001 !important;
+}
+
+
+
+.el-overlay-dialog {
+  position: relative !important;
+}
+
+
 // 弹入动画
 @keyframes bounceIn {
   0% {
@@ -432,3 +464,4 @@ h2 {
     color: #409eff;
   }
 }
+

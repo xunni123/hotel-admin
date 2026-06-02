@@ -2,7 +2,7 @@
   <div>
     <MyDrawer
       v-model="visible"
-      :title="'新建预定'"
+      :title="isEdit ? '编辑预订' : '新建预定'"
       :size="600"
       close-on-click-modal
     >
@@ -80,24 +80,49 @@ import type { FormRules } from 'element-plus'
 import * as bookingApi from '@/api/booking'
 import { getFreeRoom } from '@/api/room'
 import { MessagePrompt } from '@/utils/message'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { getOrderRules } from '@/utils/validation'
 import { useRoomOptions } from '@/composables/booking/useRoomOptions'
 import { getInitBookingForm } from '@/constants/booking/bookingInit'
 import { getFormFields } from '@/constants/booking/bookingForm'
-import { useTable } from '@/composables/role/useRole'
+
+const props = defineProps<{
+  editData?: any
+}>()
+
+const emit = defineEmits<{
+  (e: 'success'): void
+}>()
 
 const visible = ref(false)
+const isEdit = ref(false)
 const createOrderRef = ref()
 
 const { roomData, roomIdOptions, roomNumberOptions, fetchRooms } =
   useRoomOptions()
 
-const { createItem } = useTable({
-  create: (data) => bookingApi.addBooking(data),
-})
 // form
 const createOrderForm: any = reactive<Booking>(getInitBookingForm())
+
+const resetForm = () => {
+  const init = getInitBookingForm()
+  Object.keys(init).forEach((key) => {
+    createOrderForm[key] = init[key]
+  })
+}
+
+watch(
+  () => visible.value,
+  (val) => {
+    if (val && props.editData) {
+      isEdit.value = true
+      Object.assign(createOrderForm, props.editData)
+    } else if (val) {
+      isEdit.value = false
+      resetForm()
+    }
+  },
+)
 
 // 字段 -动态
 const formFields = computed(() =>
@@ -118,8 +143,14 @@ const handleConfirm = async () => {
   try {
     await createOrderRef.value.validate(async (valid: any) => {
       if (valid) {
-        //check roomId存在
-        const orderExists = createItem(createOrderForm)
+        if (isEdit.value) {
+          await bookingApi.updateBooking(createOrderForm)
+          MessagePrompt('预订编辑成功', 'success')
+        } else {
+          await bookingApi.addBooking(createOrderForm)
+          MessagePrompt('预订创建成功', 'success')
+        }
+        emit('success')
         visible.value = false
       } else {
         MessagePrompt('请完善表单信息', 'error')

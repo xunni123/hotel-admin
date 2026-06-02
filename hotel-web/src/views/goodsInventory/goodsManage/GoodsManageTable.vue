@@ -52,17 +52,34 @@
           </span>
         </template>
         <template #action="{ scope }">
-          <el-button size="small" @click="handleEdit(scope.row)"
+          <el-button
+            size="small"
+            @click="handleEdit(scope.row)"
+            :disabled="
+              !loginStore.permissions.goodsManagement ||
+              !loginStore.permissions.canEdit
+            "
             >编辑</el-button
           >
           <el-button
             size="small"
             :type="scope.row.status === 'on' ? 'warning' : 'success'"
             @click="handleToggleStatus(scope.row)"
+            :disabled="
+              !loginStore.permissions.goodsManagement ||
+              !loginStore.permissions.canEdit
+            "
           >
             {{ scope.row.status === 'on' ? '下架' : '上架' }}
           </el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)"
+          <el-button
+            size="small"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            :disabled="
+              !loginStore.permissions.goodsManagement ||
+              !loginStore.permissions.canDelete
+            "
             >删除</el-button
           >
         </template>
@@ -152,13 +169,15 @@ import { ref, reactive, onMounted } from 'vue'
 import MyTable from '@/components/MyTable.vue'
 import Pagination from '@/components/Pagination.vue'
 import Card from '@/components/Card.vue'
-import { ElMessage, ElMessageBox, ElForm } from 'element-plus'
+import { ElMessageBox, ElForm } from 'element-plus'
 import { MessagePrompt } from '@/utils/message'
 import type { Table } from '@/types'
 import * as goodsApi from '@/api/goods'
 import type { Goods } from '@/api/goods'
 import { useLoading } from '@/composables/useLoading'
+import { useLoginStore } from '@/store/login'
 
+const loginStore = useLoginStore()
 const { loading, startLoading, stopLoading } = useLoading(500)
 const allData = ref<Goods[]>([])
 const data = ref<Goods[]>([])
@@ -261,7 +280,7 @@ const fetchList = async () => {
       filterData()
     }
   } catch (error) {
-    ElMessage.error('获取数据失败')
+    MessagePrompt('获取数据失败', 'error')
   } finally {
     stopLoading()
   }

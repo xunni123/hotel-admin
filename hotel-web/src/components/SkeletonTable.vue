@@ -5,7 +5,10 @@
         v-for="(col, index) in columns"
         :key="'header-' + index"
         class="skeleton-table-header-cell"
-        :style="{ width: getColumnWidth(col), textAlign: col.align || 'center' }"
+        :style="{
+          width: getColumnWidth(col),
+          textAlign: col.align || 'center',
+        }"
       >
         <MySkeleton width="60%" height="14px" :animated="true" />
       </div>
@@ -21,7 +24,10 @@
           v-for="(col, colIndex) in columns"
           :key="'cell-' + rowIndex + '-' + colIndex"
           class="skeleton-table-cell"
-          :style="{ width: getColumnWidth(col), textAlign: col.align || 'center' }"
+          :style="{
+            width: getColumnWidth(col),
+            textAlign: col.align || 'center',
+          }"
         >
           <MySkeleton
             :width="col.skeletonWidth || '70%'"
@@ -90,7 +96,11 @@ const getColumnWidth = (col: SkeletonColumn): string => {
   display: flex;
   align-items: center;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(56, 88, 191, 0.08) 0%, rgba(72, 104, 192, 0.04) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(56, 88, 191, 0.08) 0%,
+    rgba(72, 104, 192, 0.04) 100%
+  );
   border-bottom: 1px solid #f0f0f0;
 }
 

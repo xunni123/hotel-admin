@@ -5,10 +5,10 @@
         <h2>财务报表</h2>
         <div class="query-form">
           <el-radio-group v-model="reportType" @change="handleReportTypeChange">
-            <el-radio-button label="day">日报</el-radio-button>
-            <el-radio-button label="week">周报</el-radio-button>
-            <el-radio-button label="month">月报</el-radio-button>
-            <el-radio-button label="year">年报</el-radio-button>
+            <el-radio-button value="day">日报</el-radio-button>
+            <el-radio-button value="week">周报</el-radio-button>
+            <el-radio-button value="month">月报</el-radio-button>
+            <el-radio-button value="year">年报</el-radio-button>
           </el-radio-group>
           <el-date-picker
             v-model="dateValue"
@@ -71,8 +71,25 @@
           </span>
         </template>
         <template #action="{ scope }">
-          <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            size="small"
+            @click="handleEdit(scope.row)"
+            :disabled="
+              !loginStore.permissions.financialManagement ||
+              !loginStore.permissions.canEdit
+            "
+            >编辑</el-button
+          >
+          <el-button
+            size="small"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            :disabled="
+              !loginStore.permissions.financialManagement ||
+              !loginStore.permissions.canDelete
+            "
+            >删除</el-button
+          >
         </template>
       </MyTable>
 
@@ -91,7 +108,12 @@
       :title="isEdit ? '编辑记录' : '新增记录'"
       width="550px"
     >
-      <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
+      <el-form
+        ref="formRef"
+        :model="formData"
+        :rules="rules"
+        label-width="100px"
+      >
         <el-form-item label="类型" prop="type">
           <el-radio-group v-model="formData.type">
             <el-radio label="income">收入</el-radio>
@@ -99,10 +121,19 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="金额" prop="amount">
-          <el-input-number v-model="formData.amount" :min="0" :precision="2" style="width: 100%" />
+          <el-input-number
+            v-model="formData.amount"
+            :min="0"
+            :precision="2"
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item label="支付方式" prop="paymentMethod">
-          <el-select v-model="formData.paymentMethod" placeholder="请选择支付方式" style="width: 100%">
+          <el-select
+            v-model="formData.paymentMethod"
+            placeholder="请选择支付方式"
+            style="width: 100%"
+          >
             <el-option label="微信支付" value="wechat" />
             <el-option label="支付宝" value="alipay" />
             <el-option label="现金" value="cash" />
@@ -113,7 +144,12 @@
           <el-input v-model="formData.orderNo" placeholder="请输入关联订单号" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入备注" />
+          <el-input
+            v-model="formData.remark"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入备注"
+          />
         </el-form-item>
         <el-form-item label="操作人" prop="operator">
           <el-input v-model="formData.operator" placeholder="请输入操作人" />
@@ -121,18 +157,20 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
+        <el-button type="primary" @click="handleSubmit" :loading="submitting"
+          >确定</el-button
+        >
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, onMounted, nextTick, computed, reactive } from 'vue'
 import MyTable from '@/components/MyTable.vue'
 import Pagination from '@/components/Pagination.vue'
 import Card from '@/components/Card.vue'
-import { ElMessage, ElMessageBox, ElForm } from 'element-plus'
+import { ElMessageBox, ElForm } from 'element-plus'
 import { MessagePrompt } from '@/utils/message'
 import { exportToExcel } from '@/utils/export'
 import * as echarts from 'echarts'
@@ -140,7 +178,9 @@ import type { Table } from '@/types'
 import * as financialApi from '@/api/financialRecord'
 import type { FinancialRecord } from '@/api/financialRecord'
 import { useLoading } from '@/composables/useLoading'
+import { useLoginStore } from '@/store/login'
 
+const loginStore = useLoginStore()
 const { loading, startLoading, stopLoading } = useLoading(500)
 const allData = ref<any[]>([])
 const data = ref<any[]>([])
@@ -169,7 +209,9 @@ const formData = reactive({
 const rules = {
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
   amount: [{ required: true, message: '请输入金额', trigger: 'blur' }],
-  paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
+  paymentMethod: [
+    { required: true, message: '请选择支付方式', trigger: 'change' },
+  ],
 }
 
 const exportColumns = [
@@ -190,14 +232,20 @@ const monthOrders = ref(680)
 
 const datePickerType = computed(() => {
   const map: Record<string, string> = {
-    day: 'date', week: 'week', month: 'month', year: 'year',
+    day: 'date',
+    week: 'week',
+    month: 'month',
+    year: 'year',
   }
   return map[reportType.value] || 'date'
 })
 
 const datePickerPlaceholder = computed(() => {
   const map: Record<string, string> = {
-    day: '选择日期', week: '选择周', month: '选择月份', year: '选择年份',
+    day: '选择日期',
+    week: '选择周',
+    month: '选择月份',
+    year: '选择年份',
   }
   return map[reportType.value] || '选择日期'
 })
@@ -211,11 +259,22 @@ const tableOptions: Table[] = [
   { label: '备注', prop: 'remark', align: 'left' },
   { label: '操作人', prop: 'operator', align: 'center' },
   { label: '创建时间', prop: 'createTime', align: 'center' },
-  { label: '操作', prop: 'actions', actions: true, align: 'center', width: 160 },
+  {
+    label: '操作',
+    prop: 'actions',
+    actions: true,
+    align: 'center',
+    width: 160,
+  },
 ]
 
 const getPaymentMethodText = (method: string) => {
-  const map: Record<string, string> = { wechat: '微信支付', alipay: '支付宝', cash: '现金', bank: '银行卡' }
+  const map: Record<string, string> = {
+    wechat: '微信支付',
+    alipay: '支付宝',
+    cash: '现金',
+    bank: '银行卡',
+  }
   return map[method] || method
 }
 
@@ -224,19 +283,26 @@ const initRevenueChart = () => {
   const chart = echarts.init(revenueChartRef.value)
   chart.setOption({
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] },
+    xAxis: {
+      type: 'category',
+      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    },
     yAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
-    series: [{
-      name: '收入', type: 'line', smooth: true,
-      data: [1200, 1500, 1800, 1300, 2000, 2500, 2200],
-      itemStyle: { color: '#409eff' },
-      areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
-          { offset: 1, color: 'rgba(64, 158, 255, 0.05)' },
-        ]),
+    series: [
+      {
+        name: '收入',
+        type: 'line',
+        smooth: true,
+        data: [1200, 1500, 1800, 1300, 2000, 2500, 2200],
+        itemStyle: { color: '#409eff' },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
+            { offset: 1, color: 'rgba(64, 158, 255, 0.05)' },
+          ]),
+        },
       },
-    }],
+    ],
   })
 }
 
@@ -246,15 +312,19 @@ const initPaymentChart = () => {
   chart.setOption({
     tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
     legend: { orient: 'vertical', right: 10, top: 'center' },
-    series: [{
-      name: '支付方式', type: 'pie', radius: ['40%', '70%'],
-      data: [
-        { value: 45, name: '微信支付', itemStyle: { color: '#67c23a' } },
-        { value: 35, name: '支付宝', itemStyle: { color: '#409eff' } },
-        { value: 15, name: '现金', itemStyle: { color: '#e6a23c' } },
-        { value: 5, name: '其他', itemStyle: { color: '#909399' } },
-      ],
-    }],
+    series: [
+      {
+        name: '支付方式',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        data: [
+          { value: 45, name: '微信支付', itemStyle: { color: '#67c23a' } },
+          { value: 35, name: '支付宝', itemStyle: { color: '#409eff' } },
+          { value: 15, name: '现金', itemStyle: { color: '#e6a23c' } },
+          { value: 5, name: '其他', itemStyle: { color: '#909399' } },
+        ],
+      },
+    ],
   })
 }
 
@@ -285,7 +355,7 @@ const fetchList = async () => {
       }
     }
   } catch (error) {
-    ElMessage.error('获取数据失败')
+    MessagePrompt('获取数据失败', 'error')
   } finally {
     stopLoading()
   }
@@ -294,8 +364,13 @@ const fetchList = async () => {
 const handleAdd = () => {
   isEdit.value = false
   Object.assign(formData, {
-    recordId: null, type: 'income', amount: 0, paymentMethod: '',
-    orderNo: '', remark: '', operator: '',
+    recordId: null,
+    type: 'income',
+    amount: 0,
+    paymentMethod: '',
+    orderNo: '',
+    remark: '',
+    operator: '',
   })
   dialogVisible.value = true
 }
@@ -316,7 +391,9 @@ const handleEdit = (row: any) => {
 
 const handleDelete = (row: any) => {
   ElMessageBox.confirm(`确定要删除该记录吗？`, '提示', {
-    confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning',
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
   })
     .then(async () => {
       try {
@@ -351,7 +428,10 @@ const handleSubmit = async () => {
 
         let result
         if (isEdit.value) {
-          result = await financialApi.updateFinancialRecord(formData.recordId!, submitData)
+          result = await financialApi.updateFinancialRecord(
+            formData.recordId!,
+            submitData,
+          )
         } else {
           result = await financialApi.addFinancialRecord(submitData)
         }
@@ -392,9 +472,15 @@ const handleExport = () => {
     MessagePrompt('没有数据可导出', 'warning')
     return
   }
-  ElMessageBox.confirm(`确定要导出 ${total.value} 条财务记录数据吗？`, '确认导出', {
-    confirmButtonText: '确定导出', cancelButtonText: '取消', type: 'info',
-  })
+  ElMessageBox.confirm(
+    `确定要导出 ${total.value} 条财务记录数据吗？`,
+    '确认导出',
+    {
+      confirmButtonText: '确定导出',
+      cancelButtonText: '取消',
+      type: 'info',
+    },
+  )
     .then(() => {
       exportToExcel([...allData.value], exportColumns, '财务报表')
       MessagePrompt('导出成功', 'success')
@@ -470,9 +556,15 @@ onMounted(() => {
     color: #fff;
   }
 
-  .stat-card:nth-child(2) { background: var(--card); }
-  .stat-card:nth-child(3) { background: var(--info); }
-  .stat-card:nth-child(4) { background: var(--success); }
+  .stat-card:nth-child(2) {
+    background: var(--card);
+  }
+  .stat-card:nth-child(3) {
+    background: var(--info);
+  }
+  .stat-card:nth-child(4) {
+    background: var(--success);
+  }
 
   .stat-label {
     font-size: 14px;
@@ -504,7 +596,9 @@ onMounted(() => {
     color: #303133;
   }
 
-  .chart-wrapper { height: 300px; }
+  .chart-wrapper {
+    height: 300px;
+  }
 
   :deep(.el-button) {
     background-color: var(--tabs);

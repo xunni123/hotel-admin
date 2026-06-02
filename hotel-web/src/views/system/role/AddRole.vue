@@ -90,13 +90,12 @@ const submitForm = () => {
             MessagePrompt('添加成功', 'success')
           } else {
             const reason = message.replace(/^运行时错误[：:]/, '')
-            console.log(reason)
             MessagePrompt(reason, 'error')
           }
           close()
         })
         .catch((error) => {
-          console.error('添加角色失败:', error)
+          MessagePrompt('添加角色失败', 'error')
           close()
         })
     }

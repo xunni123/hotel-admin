@@ -2,12 +2,13 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
-// elment-plus
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
-// https://vite.dev/config/
+import viteCompression from 'vite-plugin-compression'
+// 删除这行 - import importToCDN from 'vite-plugin-cdn-import'
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -17,6 +18,14 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver({ importStyle: 'css' })],
     }),
+    viteCompression({
+      verbose: true,
+      disable: false,
+      threshold: 10240,
+      algorithm: 'gzip',
+      ext: '.gz',
+    }),
+    // 删除整个 importToCDN 配置块
   ],
   server: {
     host: '0.0.0.0',
@@ -25,13 +34,12 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        changeOrigin: true, //解决跨域
-        rewrite: (path) => path.replace(/^\/api/, ''),  //去掉api前缀
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
   resolve: {
-    // 配置别名
     alias: [
       {
         find: '@',
@@ -43,13 +51,26 @@ export default defineConfig({
     target: 'es2020',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-vue': ['vue', 'vue-router', 'pinia'],
-          'vendor-element-plus': ['element-plus'],
-          'vendor-echarts': ['echarts', 'vue-echarts'],
-          'vendor-xlsx': ['xlsx'],
+        manualChunks(id) {
+          if (
+            id.includes('vue') ||
+            id.includes('vue-router') ||
+            id.includes('pinia')
+          ) {
+            return 'vendor-vue'
+          }
+          if (id.includes('element-plus')) {
+            return 'vendor-element-plus'
+          }
+          if (id.includes('echarts')) {
+            return 'vendor-echarts'
+          }
+          if (id.includes('xlsx')) {
+            return 'vendor-xlsx'
+          }
         },
       },
     },
+    assetsDir: 'static/assets',
   },
 })

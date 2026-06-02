@@ -126,7 +126,7 @@ import { onMounted, ref, reactive } from 'vue'
 import * as menusApi from '@/api/menus'
 import { useTable } from '@/composables/role/useRole'
 import Pagination from '@/components/Pagination.vue'
-import { ElMessage } from 'element-plus'
+import { MessagePrompt } from '@/utils/message'
 import type { Menus, Table } from '@/types'
 import type { ElTree } from 'element-plus'
 
@@ -159,7 +159,13 @@ const tableOptions: Table[] = [
   { label: '菜单图标', prop: 'icon', align: 'center' },
   { label: '排序', prop: 'sort_order', align: 'center' },
   { label: '状态', prop: 'status', align: 'center' },
-  { label: '操作', prop: 'actions', align: 'center', actions: true,width:'250px' },
+  {
+    label: '操作',
+    prop: 'actions',
+    align: 'center',
+    actions: true,
+    width: '250px',
+  },
 ]
 
 const drawerVisible = ref(false)
@@ -183,7 +189,7 @@ const openEditDrawer = async (row: any) => {
     !loginStore.permissions.menuManagement ||
     !loginStore.permissions.canEdit
   ) {
-    ElMessage.warning('你没有权限修改菜单')
+    MessagePrompt('你没有权限修改菜单', 'warning')
     return
   }
 
@@ -217,17 +223,17 @@ const handleTreeNodeClick = (node: any) => {
 
 const handleConfirm = async () => {
   if (!editForm.menu_name) {
-    ElMessage.error('请输入菜单名称')
+    MessagePrompt('请输入菜单名称', 'error')
     return
   }
 
   try {
     await menusApi.updateMenu(editForm)
-    ElMessage.success('更新菜单成功')
+    MessagePrompt('更新菜单成功', 'success')
     drawerVisible.value = false
     fetchList()
   } catch (error) {
-    ElMessage.error('更新菜单失败')
+    MessagePrompt('更新菜单失败', 'error')
   }
 }
 
@@ -240,16 +246,16 @@ const handleDelete = async (row: any) => {
     !loginStore.permissions.menuManagement ||
     !loginStore.permissions.canDelete
   ) {
-    ElMessage.warning('你没有权限删除菜单')
+    MessagePrompt('你没有权限删除菜单', 'warning')
     return
   }
 
   try {
     await menusApi.deleteMenu(row.menu_id)
-    ElMessage.success('删除菜单成功')
+    MessagePrompt('删除菜单成功', 'success')
     fetchList()
   } catch (error) {
-    ElMessage.error('删除菜单失败')
+    MessagePrompt('删除菜单失败', 'error')
   }
 }
 
