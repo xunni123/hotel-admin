@@ -25,6 +25,7 @@ export const updateBaseURL = () => {
   service.defaults.baseURL = getServerUrl()
 }
 
+//请求
 service.interceptors.request.use(
   (config) => {
     if (!config.baseURL) {
@@ -48,6 +49,7 @@ service.interceptors.request.use(
   },
 )
 
+//回复
 service.interceptors.response.use(
   (response) => {
     const res = response.data

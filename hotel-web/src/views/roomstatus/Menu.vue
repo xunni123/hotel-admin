@@ -49,11 +49,14 @@ import RoomStatusFilter from './RoomStatusFilter.vue'
 import OrderFilter from './OrderFilter.vue'
 import MenuTable from './MenuTable.vue'
 import { ref, reactive } from 'vue'
-import type { FiltersParam } from '@/types/index'
+import type { FiltersParam } from '@/types/roomstatus.ts'
 import { getMenuContent } from '@/api/room/index'
 import { roomstatusStore } from '@/store/roomstatus'
+import { MessagePrompt } from '@/utils/message.ts'
 
 const useRoomStore = roomstatusStore()
+
+// 搜索关键词
 const filters: FiltersParam = reactive({
   searchText: '',
   location: {
@@ -79,6 +82,7 @@ const filters: FiltersParam = reactive({
   },
 })
 
+// 搜索tool
 const handleSearch = () => {
   getMenuContent(filters)
     .then((res) => {

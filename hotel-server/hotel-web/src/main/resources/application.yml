@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: active
   jackson:
     property-naming-strategy: LOWER_CAMEL_CASE
     default-property-inclusion: non_null

@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Menus } from '@/types/index'
+import type { Menus } from '@/types/menus.ts'
 import { useLoginStore } from '@/store/login'
 import { ref, onMounted, computed } from 'vue'
 import MenuItem from './MenuItem.vue'

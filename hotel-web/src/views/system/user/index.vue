@@ -1,6 +1,5 @@
 <template>
   <div class="user-list">
-
     <!-- 表单 -->
     <UserTable />
   </div>

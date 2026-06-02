@@ -1,7 +1,7 @@
 export interface Table {
   prop: string
   label: string
-  type: string
+  type?: string
   width?: string | number
   minWidth?: string | number
   align?: 'left' | 'center' | 'right'

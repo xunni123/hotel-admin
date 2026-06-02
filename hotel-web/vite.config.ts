@@ -7,7 +7,7 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 import viteCompression from 'vite-plugin-compression'
-// 删除这行 - import importToCDN from 'vite-plugin-cdn-import'
+
 
 export default defineConfig({
   plugins: [
@@ -25,7 +25,7 @@ export default defineConfig({
       algorithm: 'gzip',
       ext: '.gz',
     }),
-    // 删除整个 importToCDN 配置块
+    
   ],
   server: {
     host: '0.0.0.0',
@@ -33,7 +33,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
@@ -74,3 +74,4 @@ export default defineConfig({
     assetsDir: 'static/assets',
   },
 })
+ 

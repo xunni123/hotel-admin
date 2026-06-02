@@ -47,8 +47,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import {  type FormInstance, type FormRules } from 'element-plus'
 import { updatePassword } from '@/api/user'
+import { MessagePrompt } from '@/utils/message'
 
 const props = defineProps<{
   visible: boolean
@@ -117,11 +118,11 @@ const handleSubmit = async () => {
       loading.value = true
       try {
         await updatePassword(props.userId, passwordForm.newPassword)
-        ElMessage.success('密码修改成功')
+        MessagePrompt('密码修改成功', 'success')
         emit('success')
         handleClose()
       } catch (error: any) {
-        ElMessage.error(error.message || '密码修改失败')
+        MessagePrompt(error.message || '密码修改失败', 'error')
       } finally {
         loading.value = false
       }

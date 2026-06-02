@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Menus } from '@/types/index'
+import type { Menus } from '@/types/menus'
 
 const props = defineProps<{
   menu: Menus

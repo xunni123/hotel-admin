@@ -74,6 +74,7 @@ const emit = defineEmits<{
   (e: 'assign', cleaner: Cleaner, roomIds: number[]): void
 }>()
 
+//keyword
 const filters = reactive({
   searchText: '',
 })
@@ -83,6 +84,8 @@ const selectedCleaner = ref<Cleaner | null>(null)
 const selectedRooms = ref<number[]>([])
 const assignLoading = ref(false)
 
+
+// 过滤员工
 const filteredCleaners = computed(() => {
   if (!filters.searchText) return cleaners.value
   const search = filters.searchText.toLowerCase()
@@ -91,6 +94,7 @@ const filteredCleaners = computed(() => {
   )
 })
 
+// 加载员工当前状态
 const loadCleaners = async () => {
   try {
     const res = await cleaningApi.getCleanerWithTaskCount()
@@ -111,14 +115,16 @@ const loadCleaners = async () => {
       return a.taskCount - b.taskCount
     })
   } catch (error) {
-    console.error('加载保洁员失败:', error)
+    MessagePrompt('加载保洁员失败:', error)
   }
 }
 
+//选择员工
 const selectCleaner = (cleaner: Cleaner) => {
   selectedCleaner.value = cleaner
 }
 
+//获取状态
 const getStatusText = (status: string, cleaner: Cleaner) => {
   if (cleaner.taskCount > 3) {
     return '忙碌'
@@ -131,6 +137,7 @@ const getStatusText = (status: string, cleaner: Cleaner) => {
   return statusMap[status] || status
 }
 
+//开始派单
 const handleAssign = async () => {
   if (!selectedCleaner.value || selectedRooms.value.length === 0) {
     MessagePrompt('请选择保洁人员和房间', 'warning')
@@ -149,7 +156,6 @@ const handleAssign = async () => {
     selectedRooms.value = []
     await loadCleaners()
   } catch (error) {
-    console.error('派单失败:', error)
     MessagePrompt('派单失败', 'error')
   } finally {
     assignLoading.value = false

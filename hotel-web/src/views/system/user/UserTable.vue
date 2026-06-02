@@ -88,7 +88,7 @@ import { onMounted, ref } from 'vue'
 import * as usersApi from '@/api/user/index'
 import { useTable } from '@/composables/role/useRole'
 import Pagination from '@/components/Pagination.vue'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table.ts'
 import avatarImg from '@/assets/avatar.jpg'
 import UserDrawer from './UserDrawer.vue'
 
@@ -122,7 +122,7 @@ const {
       return usersApi.getAllUser()
     },
     select: (params: any) => usersApi.getUserByUsername(params),
-    delete: (id: string | number) => usersApi.deleteUser(id),
+    delete: (id: string | number) => usersApi.deleteUser(id as number ),
   },
   { cacheKey: 'user_table' },
 )
@@ -134,24 +134,41 @@ const editUserData = ref<any>(null)
 const isEdit = ref(false)
 
 const tableOptions: Table[] = [
-  { label: '用户ID', prop: 'userId', align: 'left', slot: 'date' },
-  { label: '用户名', prop: 'username', align: 'left' },
-  { label: '邮箱', prop: 'email', align: 'left' },
+  {
+    label: '用户ID', prop: 'userId', align: 'left', slot: 'date',
+    type: ''
+  },
+  {
+    label: '用户名', prop: 'username', align: 'left',
+    type: ''
+  },
+  {
+    label: '邮箱', prop: 'email', align: 'left',
+    type: ''
+  },
   {
     label: '头像',
     prop: 'avatar',
     align: 'center',
     slot: 'avatar',
     showOverflowTooltip: false,
+    type: ''
   },
-  { label: '状态', prop: 'status', align: 'left' },
-  { label: '操作', prop: 'actions', actions: true, align: 'center' },
+  {
+    label: '状态', prop: 'status', align: 'left',
+    type: ''
+  },
+  {
+    label: '操作', prop: 'actions', actions: true, align: 'center',
+    type: ''
+  },
 ]
 
 const queryForm = ref({
   username: '',
 })
 
+// 查询
 const handleQuery = async () => {
   const params = { username: queryForm.value.username }
   startLoading()
@@ -163,6 +180,7 @@ const handleQuery = async () => {
   }
 }
 
+// 重置
 const handleReset = async () => {
   queryForm.value.username = ''
   clearCache()
@@ -174,18 +192,21 @@ const handleReset = async () => {
   }
 }
 
+// 添加
 const handleAdd = () => {
   isEdit.value = false
   editUserData.value = null
   drawerVisible.value = true
 }
 
+// 编辑
 const handleEdit = (row: any) => {
   isEdit.value = true
   editUserData.value = row
   drawerVisible.value = true
 }
 
+// 删除
 const handleDelete = (row: any) => {
   if (
     !loginStore.permissions.userManagement ||
@@ -201,6 +222,7 @@ const handleDelete = (row: any) => {
   }
 }
 
+// drawer成功回调
 const handleDrawerSuccess = async () => {
   clearCache()
   startLoading()

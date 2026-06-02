@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import type { Menus } from '@/types/index'
+import type { Menus } from '@/types/menus'
 import { setupAuth } from './auth'
 import 'nprogress/nprogress.css'
 import type { RouteRecordRaw } from 'vue-router'

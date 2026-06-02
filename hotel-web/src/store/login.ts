@@ -86,6 +86,8 @@ export const useLoginStore = defineStore('login', {
         localCache.setCache('role', res.role || '')
         localCache.setCache('isAdmin', res.isAdmin || false)
         localCache.setCache('permissions', JSON.stringify(this.permissions))
+        
+        await this.getMenusInfo(res.userId)
       } catch (err) {
         throw err
       }

@@ -22,16 +22,19 @@ import { MessagePrompt } from '@/utils/message'
 const menuRef = ref<any>(null)
 const tableRef = ref<any>(null)
 
+//更新房间
 const handleUpdateSelectedRooms = (rooms: number[]) => {
   menuRef.value?.setSelectedRooms(rooms)
 }
 
+//刷新清洁员工
 const handleRefreshCleaners = () => {
   menuRef.value?.loadCleaners()
 }
 
 let assignTimer: ReturnType<typeof setTimeout> | null = null
 
+// 派单tool
 const handleAssign = (cleaner: any, roomIds: number[]) => {
   tableRef.value?.refreshRooms()
   menuRef.value?.loadCleaners()

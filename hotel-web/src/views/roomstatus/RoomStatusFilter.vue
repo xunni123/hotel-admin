@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import type { RoomStatus } from '@/types'
+import type { RoomStatus } from '@/types/roomstatus'
 import * as roomApi from '@/api/room/index'
 
 const props = defineProps<{ modelValue: RoomStatus }>()

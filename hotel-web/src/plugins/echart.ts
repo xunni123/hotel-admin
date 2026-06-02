@@ -1,10 +1,10 @@
-// src/plugins/echarts.ts
+
 import * as echarts from 'echarts/core'
 
-// 1. 按需引入图表类型（只引入你需要的）
+// 1. 按需引入图表类型
 import { LineChart, BarChart, PieChart } from 'echarts/charts'
 
-// 2. 按需引入组件（标题、提示框、图例、网格、数据集等）
+// 2. 按需引入组件
 import {
   TitleComponent,
   TooltipComponent,
@@ -15,10 +15,10 @@ import {
   DataZoomComponent,
 } from 'echarts/components'
 
-// 3. 引入渲染器（Canvas 或 SVG，二选一即可）
+// 3. 引入渲染器
 import { CanvasRenderer } from 'echarts/renderers'
 
-// 4. 引入特性（可选，如标签自动布局、全局过渡动画）
+// 4. 引入特性（
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 
 // 注册所有按需引入的模块
@@ -42,5 +42,5 @@ echarts.use([
   UniversalTransition,
 ])
 
-// 导出已配置好的 echarts 实例（也可以直接导出，组件中 import 这个文件）
+// 导出已配置好的 echarts 实例（
 export default echarts

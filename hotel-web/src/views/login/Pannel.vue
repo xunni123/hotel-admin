@@ -71,7 +71,7 @@ import { useLoginStore } from '@/store/login'
 import { MessagePrompt } from '@/utils/message'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-import type { Login } from '@/types'
+import type { Login } from '@/types/login.ts'
 
 const ruleFormRef = ref<FormInstance>()
 

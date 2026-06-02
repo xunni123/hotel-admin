@@ -1,5 +1,5 @@
 import service from '@/services'
-import type { Users } from '@/types'
+import type { Users } from '@/types/users'
 
 // 所有用户
 export const getAllUser = (): Promise<{
