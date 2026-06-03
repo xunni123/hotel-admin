@@ -102,7 +102,8 @@ import MyTable from '@/components/MyTable.vue'
 import MyDrawer from '@/components/MyDrawer.vue'
 import Pagination from '@/components/Pagination.vue'
 import { onMounted, ref } from 'vue'
-import type { AddRole, Table } from '@/types'
+import type { AddRole } from '@/types/addRole.ts'
+import type { Table } from '@/types/table.ts'
 import * as api from '@/api/role'
 import { getRoleIdTree } from '@/api/menus'
 import { useTable } from '@/composables/role/useRole'
@@ -110,10 +111,8 @@ import { useTable } from '@/composables/role/useRole'
 import { MessagePrompt } from '@/utils/message'
 import { useLoginStore } from '@/store/login'
 import TreeContent from './TreeContent.vue'
-import { roleTreeStore } from '@/store/roleTree'
 import RoleDrawer from './RoleDrawer.vue'
 
-const roleStore = roleTreeStore()
 const loginStore = useLoginStore()
 
 //权限
@@ -139,7 +138,6 @@ const {
   handleCurrentChange,
   fetchList,
   select,
-  updateItem,
   deleteItem,
   loadCache,
   clearCache,
@@ -209,8 +207,8 @@ const handleDelete = (row: any) => {
   } else {
     deleteItem(
       row,
-      (row) => row.roleId,
-      (row) => row.roleName,
+      (row: any) => row.roleId,
+      (row: any) => row.roleName,
     )
   }
 }

@@ -7,6 +7,39 @@ export interface Echartsinstance {
   theme?: string | object
 }
 
+// 饼图
+export interface PieChartOptions {
+  title?: string
+  valueKey?: string
+  nameKey?: string
+  colors?: string[]
+  titlePosition?: {
+    left: 'center' | 'left' | 'right' | number | string
+    top: 'center' | 'top' | 'bottom' | number | string
+  }
+  pieRadius?: [string, string] | string[]
+  pieCenter?: [string, string] | string[]
+}
+
+//柱型and折线
+export interface BarAndLineGroupOptions {
+  title?: string
+  tooltip?: {
+    trigger: string
+  }
+  legend?: {
+    data: string[]
+    top: string
+  }
+}
+
+//柱型and折线数据配置项
+export interface CharDataOptions {
+  dates: string[]
+  revenue: number[]
+  revpar: number[]
+}
+
 // 入住率
 export interface CheckInRates {
   date: string

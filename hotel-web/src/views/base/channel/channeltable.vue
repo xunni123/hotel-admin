@@ -145,13 +145,15 @@ const startRowEdit = (rowIndex: number) => {
 }
 
 const handleSaveRow = ({ rowIdx, newRow, oldRow }: any) => {
-  updateItem(rowIdx, newRow, oldRow, (row: any) => row.channelId)
+  console.log('保存渠道:', newRow)
 }
 
-const handleRowCacel = ({ rowIdx, oldRow }: any) => {}
+const handleRowCacel = ({ rowIdx, oldRow }: any) => {
+  console.log('取消编辑', rowIdx)
+}
 
 const confirm = ({ Idx, row, prop, newVal, oldVal }: any) => {
-  updateItem(Idx, row, data.value[Idx], (row: any) => row.channelId)
+  console.log('确认修改:', prop, newVal)
 }
 
 const cancel = ({ row, prop, oldVal }: any) => {}

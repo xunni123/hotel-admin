@@ -1,5 +1,5 @@
 import service from '@/services'
-import type { AddRole } from '@/types'
+import type { AddRole } from '@/types/addRole'
 
 // 添加
 export const addRole = (param: AddRole) => {

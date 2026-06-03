@@ -112,4 +112,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String encodedPassword = passwordEncoder.encode(password);
         return userMapper.updatePassword(userId, encodedPassword);
     }
+
+    //新增用户
+    @Override
+    public int insertUser(AddUserDoto user) {
+        // 密码加密
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        
+        // 状态转换：enabled -> 1, disabled -> 0
+        if ("enabled".equalsIgnoreCase(user.getStatus())) {
+            user.setStatus("1");
+        } else if ("disabled".equalsIgnoreCase(user.getStatus())) {
+            user.setStatus("0");
+        }
+        
+        return userMapper.insertUser(user);
+    }
 }

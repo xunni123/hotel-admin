@@ -68,6 +68,7 @@
         v-model:page="current"
         v-model:limit="pageSize"
         :total="total"
+        @query-change="handleQueryChange"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
@@ -116,13 +117,11 @@ const {
 } = useTable(
   {
     fetchList: (params?: any) => {
-      if (params && params.username) {
-        return usersApi.getUserByUsername(params)
-      }
-      return usersApi.getAllUser()
+      // 始终使用支持分页的接口
+      return usersApi.getUserByUsername(params)
     },
     select: (params: any) => usersApi.getUserByUsername(params),
-    delete: (id: string | number) => usersApi.deleteUser(id as number ),
+    delete: (id: string | number) => usersApi.deleteUser(id as number),
   },
   { cacheKey: 'user_table' },
 )
@@ -135,16 +134,23 @@ const isEdit = ref(false)
 
 const tableOptions: Table[] = [
   {
-    label: '用户ID', prop: 'userId', align: 'left', slot: 'date',
-    type: ''
+    label: '用户ID',
+    prop: 'userId',
+    align: 'left',
+    slot: 'date',
+    type: '',
   },
   {
-    label: '用户名', prop: 'username', align: 'left',
-    type: ''
+    label: '用户名',
+    prop: 'username',
+    align: 'left',
+    type: '',
   },
   {
-    label: '邮箱', prop: 'email', align: 'left',
-    type: ''
+    label: '邮箱',
+    prop: 'email',
+    align: 'left',
+    type: '',
   },
   {
     label: '头像',
@@ -152,15 +158,20 @@ const tableOptions: Table[] = [
     align: 'center',
     slot: 'avatar',
     showOverflowTooltip: false,
-    type: ''
+    type: '',
   },
   {
-    label: '状态', prop: 'status', align: 'left',
-    type: ''
+    label: '状态',
+    prop: 'status',
+    align: 'left',
+    type: '',
   },
   {
-    label: '操作', prop: 'actions', actions: true, align: 'center',
-    type: ''
+    label: '操作',
+    prop: 'actions',
+    actions: true,
+    align: 'center',
+    type: '',
   },
 ]
 
@@ -170,6 +181,10 @@ const queryForm = ref({
 
 // 查询
 const handleQuery = async () => {
+  if (queryForm.value.username === '') {
+    MessagePrompt('请填写查询条件', 'warning')
+    return
+  }
   const params = { username: queryForm.value.username }
   startLoading()
   try {
@@ -180,13 +195,24 @@ const handleQuery = async () => {
   }
 }
 
+// 分页
+const handleQueryChange = ({
+  page,
+  pageSize,
+}: {
+  page: number
+  pageSize: number
+}) => {
+  fetchList({ page, pageSize, ...queryForm.value })
+}
+
 // 重置
 const handleReset = async () => {
   queryForm.value.username = ''
   clearCache()
   startLoading()
   try {
-    await fetchList()
+    await fetchList({ page: 1, pageSize: pageSize.value })
   } finally {
     stopLoading()
   }
@@ -227,7 +253,7 @@ const handleDrawerSuccess = async () => {
   clearCache()
   startLoading()
   try {
-    await fetchList()
+    await fetchList({ page: current.value, pageSize: pageSize.value })
   } finally {
     stopLoading()
   }

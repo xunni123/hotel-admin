@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import {  type FormInstance, type FormRules } from 'element-plus'
+import { type FormInstance, type FormRules } from 'element-plus'
 import { updatePassword } from '@/api/user'
 import { MessagePrompt } from '@/utils/message'
 

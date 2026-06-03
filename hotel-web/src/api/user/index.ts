@@ -37,3 +37,8 @@ export const deleteUser = (userId: number) => {
 export const updatePassword = (userId: number, password: string) => {
   return service.put(`/user/updatePassword/${userId}`, password)
 }
+
+//新增用户
+export const createUser = (data: any) => {
+  return service.post(`/user/add`, data)
+}

@@ -53,7 +53,7 @@
 import MyDialog from '@/components/MyDialog.vue'
 import { ref, reactive } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import type { AddRole } from '@/types'
+import type { AddRole } from '@/types/addRole'
 import { useDialog } from '@/composables/role/useDialog'
 import { addRole } from '@/api/role/index'
 import { MessagePrompt } from '@/utils/message'

@@ -13,6 +13,7 @@ export interface FinancialRecord {
 
 export interface RecordQuery {
   type?: string
+  paymentMethod?: string
 }
 
 export const getFinancialRecordList = (params?: RecordQuery): Promise<{

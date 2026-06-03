@@ -94,6 +94,7 @@ const formData = reactive({
   status: 'enabled',
 })
 
+// 校验规则
 const rules: FormRules = {
   roleKey: [
     { required: true, message: '请输入角色Key', trigger: 'blur' },
@@ -107,6 +108,7 @@ const rules: FormRules = {
   status: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
+// 监听role-data变化
 watch(
   () => props.modelValue,
   (val) => {
@@ -131,6 +133,7 @@ watch(drawerVisible, (val) => {
   emit('update:modelValue', val)
 })
 
+// reset form
 const resetForm = () => {
   formData.roleId = null
   formData.roleKey = ''
@@ -140,11 +143,13 @@ const resetForm = () => {
   formData.status = 'enabled'
 }
 
+// close
 const handleClose = () => {
   drawerVisible.value = false
   resetForm()
 }
 
+// 提交
 const handleSubmit = async () => {
   if (!formRef.value) return
 

@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class AddUserDoto {
-    @NotNull(message = "用户ID不能为空")
     private Long userId;
 
     @NotNull(message = "用户名称不能为空")
@@ -15,9 +14,10 @@ public class AddUserDoto {
 
     private String password;
     private String realName;
-    private Long phone;
+    private String phone;
     private String email;
     private String avatar;
     private String status;
+    private Long roleId;
 
 }

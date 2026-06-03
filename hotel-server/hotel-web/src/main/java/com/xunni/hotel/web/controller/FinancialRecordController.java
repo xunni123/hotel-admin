@@ -21,11 +21,19 @@ public class FinancialRecordController {
     private FinancialRecordMapper financialRecordMapper;
 
     @GetMapping("/list")
-    public Result getRecordList(@RequestParam(required = false) String type) {
+    public Result getRecordList(
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String paymentMethod) {
         LambdaQueryWrapper<FinancialRecord> queryWrapper = new LambdaQueryWrapper<>();
+        
         if (StringUtils.hasText(type)) {
             queryWrapper.eq(FinancialRecord::getType, type);
         }
+        
+        if (StringUtils.hasText(paymentMethod)) {
+            queryWrapper.eq(FinancialRecord::getPaymentMethod, paymentMethod);
+        }
+        
         queryWrapper.orderByDesc(FinancialRecord::getCreateTime);
         List<FinancialRecord> list = financialRecordMapper.selectList(queryWrapper);
         return Result.success(list);

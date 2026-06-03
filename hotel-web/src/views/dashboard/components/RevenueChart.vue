@@ -28,7 +28,8 @@ onMounted(async () => {
       setData(res.data[0])
     }
   } catch {
-    // chart stays empty
+    // chart empty
+    
   }
 })
 </script>

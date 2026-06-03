@@ -68,4 +68,15 @@ public class UserController {
             return Result.error("密码更新失败");
         }
     }
+
+    // 添加用户
+    @PostMapping("/add")
+    public Result addUser(@Validated @RequestBody AddUserDoto userDoto) {
+        int result = userService.insertUser(userDoto);
+        if (result > 0) {
+            return Result.success("添加用户成功");
+        } else {
+            return Result.error("添加用户失败");
+        }
+    }
 }

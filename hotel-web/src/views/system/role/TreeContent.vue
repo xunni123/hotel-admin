@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, nextTick, type Ref } from 'vue'
+import { computed, ref, watch, nextTick, type Ref, onMounted } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import type { ElTree } from 'element-plus'
 import { getAllMenus2 } from '@/api/menus'
@@ -143,14 +143,6 @@ const updateSelectedCount = () => {
       allKeys.length > 0 && selectedCount.value === allKeys.length
   }
 }
-
-getAllMenus2().then((res) => {
-  data.value = res.data
-  nextTick(() => {
-    toggleExpand(roleStore.defaultExpandAll)
-    updateSelectedCount()
-  })
-})
 
 // 分配权限
 const append = (item: any) => {
@@ -234,6 +226,7 @@ const handleCancel = () => {
   emit('close')
 }
 
+// 提交
 const handleConfirm = async () => {
   if (!props.currentRoleId || !treeRef.value) return
 
@@ -249,6 +242,16 @@ const handleConfirm = async () => {
     loading.value = false
   }
 }
+
+onMounted(() => {
+  getAllMenus2().then((res) => {
+    data.value = res.data
+    nextTick(() => {
+      toggleExpand(roleStore.defaultExpandAll)
+      updateSelectedCount()
+    })
+  })
+})
 </script>
 
 <style scoped lang="scss">

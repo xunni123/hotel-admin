@@ -12,6 +12,8 @@
 <script setup lang="ts">
 import { fetchRegionData } from '@/api/dashboard'
 import { usePieCharts } from '@/composables/echarts/usePieChart'
+import { MessagePrompt } from '@/utils/message'
+import { onMounted } from 'vue'
 
 const { chartOption: regionOption, setData } = usePieCharts({
   title: '客源分布图',
@@ -32,6 +34,14 @@ const { chartOption: regionOption, setData } = usePieCharts({
 
 fetchRegionData().then((res) => {
   setData(res.data)
+})
+onMounted(async () => {
+  try {
+    const res = await fetchRegionData()
+    setData(res.data)
+  } catch (err) {
+    MessagePrompt(err, 'error')
+  }
 })
 </script>
 

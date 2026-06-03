@@ -46,7 +46,11 @@
       </el-form-item>
 
       <el-form-item label="房型" prop="roomType">
-        <el-input v-model="formData.roomType" placeholder="请输入房型" disabled />
+        <el-input
+          v-model="formData.roomType"
+          placeholder="请输入房型"
+          disabled
+        />
       </el-form-item>
 
       <el-form-item label="备注" prop="remark">
@@ -106,7 +110,11 @@ const rules: FormRules = {
   ],
   guestPhone: [
     { required: true, message: '请输入联系电话', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号', trigger: 'blur' },
+    {
+      pattern: /^1[3-9]\d{9}$/,
+      message: '请输入有效的手机号',
+      trigger: 'blur',
+    },
   ],
 }
 
@@ -119,7 +127,7 @@ watch(
     } else if (val) {
       resetForm()
     }
-  }
+  },
 )
 
 watch(drawerVisible, (val) => {

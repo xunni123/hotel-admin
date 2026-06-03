@@ -42,6 +42,14 @@ public class MenuController {
 
     @GetMapping("/list")
     public Result<List<Menu>> getMenuList() {
+        // 返回所有菜单的扁平化列表（包含所有层级的菜单）
+        List<Menu> menuList = menuService.getAllMenus();
+        return Result.success(menuList);
+    }
+
+    @GetMapping("/list/tree")
+    public Result<List<Menu>> getMenuListTree() {
+        // 返回树形结构的菜单（仅顶级菜单，包含子菜单）
         List<Menu> menuList = menuService.getMenuList();
         return Result.success(menuList);
     }

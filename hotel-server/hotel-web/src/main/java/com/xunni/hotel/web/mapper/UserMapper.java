@@ -32,4 +32,9 @@ public interface UserMapper extends BaseMapper<User> {
     //更新用户密码
     @Update("update users set password=#{password} where user_id=#{userId}")
     int updatePassword(@Param("userId") Integer userId, @Param("password") String password);
+
+
+    //新增用户
+    @Insert("insert into users (username, password, real_name, phone, email, avatar, status) values (#{username}, #{password}, #{realName}, #{phone}, #{email}, #{avatar}, #{status})")
+    int insertUser(AddUserDoto user);
 }

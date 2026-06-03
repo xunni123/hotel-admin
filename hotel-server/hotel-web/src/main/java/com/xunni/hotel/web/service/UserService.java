@@ -21,4 +21,6 @@ public interface UserService extends IService<User> {
 
     int updatePassword(Integer userId, String password);
 
+    int insertUser(AddUserDoto user);
+
 }

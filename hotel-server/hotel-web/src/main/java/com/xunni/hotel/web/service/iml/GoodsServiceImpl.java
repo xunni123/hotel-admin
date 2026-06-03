@@ -1,4 +1,4 @@
-package com.xunni.hotel.web.service.impl;
+package com.xunni.hotel.web.service.iml;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xunni.hotel.entity.Goods;

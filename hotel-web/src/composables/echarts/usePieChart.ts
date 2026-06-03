@@ -1,9 +1,10 @@
 import { ref, computed, isRef } from 'vue'
-import type { RegionItem, Region } from '@/types'
+import type { RegionItem, Region ,PieChartOptions} from '@/types/echarts'
+
 
 // 饼图
 export function usePieCharts<T extends Record<string, any> = RegionItem>(
-  options = {},
+  options: PieChartOptions = {},
 ) {
   const {
     title = '客源分布图',
@@ -24,6 +25,7 @@ export function usePieCharts<T extends Record<string, any> = RegionItem>(
     pieCenter = ['50%', '50%'],
   } = options
 
+  //数据echarts化
   const transformData = (data: Region[]) => {
     if (!Array.isArray(data)) return []
     return data.map((item) => ({

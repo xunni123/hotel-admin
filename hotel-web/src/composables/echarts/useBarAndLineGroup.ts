@@ -1,7 +1,13 @@
 import { da } from 'element-plus/es/locale/index.mjs'
 import { ref, computed, isRef } from 'vue'
+import type { BarAndLineGroupOptions,CharDataOptions } from '@/types/echarts'
 
-export const useBarAndLineGroup: Function = (options: {}) => {
+
+
+// 柱形and折线配置
+export const useBarAndLineGroup: Function = (
+  options: BarAndLineGroupOptions,
+) => {
   const {
     title = '近7天营收趋势',
     tooltip = { trigger: 'axis' },
@@ -11,11 +17,16 @@ export const useBarAndLineGroup: Function = (options: {}) => {
     },
   } = options
 
-  const chartData = ref({})
+  const chartData = ref<CharDataOptions>({
+    dates: [],
+    revenue: [],
+    revpar: [],
+  })
 
+  // 配置项
   const chartOption = computed(() => {
     const dataList = chartData.value
-    const { dates, revenue, revpar } = dataList
+    const { dates, revenue, revpar }: CharDataOptions = dataList
     return {
       title: { text: title, left: 'center', top: '0' },
       tooltip: tooltip,
@@ -35,7 +46,7 @@ export const useBarAndLineGroup: Function = (options: {}) => {
           nameLocation: 'middle',
           nameGap: 50,
           axisLabel: { formatter: '{value}' },
-          splitLine: { show: false }, // 右侧 y 轴不显示分割线，保持图表简洁
+          splitLine: { show: false }, //  y 轴不显示分割线
         },
       ],
       series: [
