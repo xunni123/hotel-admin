@@ -37,4 +37,7 @@ public interface SelectRoleMapper {
             "JOIN users u ON ur.user_id = u.user_id " +
             "WHERE u.username = #{username}")
     AddRoleDoto selectRoleByUsername(@Param("username") String username);
+
+    @Select("SELECT role_id as roleId, role_name as roleName, role_key as roleKey, description, status, sort_order as sortOrder FROM roles WHERE role_name = #{roleName}")
+    List<AddRoleDoto> selectByRoleName(@Param("roleName") String roleName);
 }

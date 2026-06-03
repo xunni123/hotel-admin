@@ -20,7 +20,7 @@ export const getMenuContent = (param: FiltersParam) => {
     channel: param.order.channel,
     specialTags: param.order.specialTags,
   }
-  return service.get('/room/list', { params: flatParams })
+  return service.get('/room/list', { params: { ...flatParams, pageSize: 999 } })
 }
 
 // get all房间

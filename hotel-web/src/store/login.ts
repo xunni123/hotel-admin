@@ -100,6 +100,7 @@ export const useLoginStore = defineStore('login', {
           this.token = ''
           this.role = ''
           this.isAdmin = false
+          this.menus = []
           this.permissions = {
           userManagement: false,
           roleManagement: false,
@@ -123,6 +124,7 @@ export const useLoginStore = defineStore('login', {
           localCache.removeCache('role')
           localCache.removeCache('isAdmin')
           localCache.removeCache('permissions')
+          localCache.removeCache('menus')
           MessagePrompt('退出成功', 'success')
           return true
         }

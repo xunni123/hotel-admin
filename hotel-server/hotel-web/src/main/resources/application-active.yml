@@ -22,12 +22,12 @@ spring:
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
-
 #mybatis plus配置
 mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
   global-config:
     db-config:
       #          配置mybatis plus 在更新时只更新非空和非null字段
@@ -35,4 +35,4 @@ mybatis-plus:
 
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n'

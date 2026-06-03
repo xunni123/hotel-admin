@@ -1,9 +1,13 @@
 package com.xunni.hotel.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
+@TableName("orders")
 public class Booking {
+    @TableId
     private Integer orderId;
     private String orderNo;
     private String roomNumber;

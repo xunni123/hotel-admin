@@ -1,14 +1,18 @@
 package com.xunni.hotel.web.dto;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.lang.reflect.Array;
+import java.sql.Array;
 
 @Data
+@TableName("room")
 public class RoomDoto {
     // 房间字段
+    @TableId
     private Integer roomId;
     private String roomNumber;
     private String building;

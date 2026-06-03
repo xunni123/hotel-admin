@@ -28,5 +28,5 @@ export const roomstatusStore = defineStore('roomstatusStore', {
       this.isSearched = value
     },
   },
-  persist: true,
+  persist: false,
 })
