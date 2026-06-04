@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia'
 import { getMenusByUserId } from '@/api/menus'
 import { login } from '@/api/login'
-import type { Menus, Login } from '@/types'
+import type { Menus } from '@/types/menus'
+import type { Login } from '@/types/login'
 import cache from '@/utils/cache'
 const { localCache } = cache
 import { PRIMARY_TOKEN } from '@/global/primary_key'
 import { showConfirm } from '@/utils/confirm'
 import { MessagePrompt } from '@/utils/message'
 import { addRoutes } from '@/router/index'
-import type { PermissionDTO } from '@/types'
+import type { PermissionDTO } from '@/types/permission'
 
 export const useLoginStore = defineStore('login', {
   state: () => ({
@@ -86,7 +87,7 @@ export const useLoginStore = defineStore('login', {
         localCache.setCache('role', res.role || '')
         localCache.setCache('isAdmin', res.isAdmin || false)
         localCache.setCache('permissions', JSON.stringify(this.permissions))
-        
+
         await this.getMenusInfo(res.userId)
       } catch (err) {
         throw err
@@ -102,23 +103,23 @@ export const useLoginStore = defineStore('login', {
           this.isAdmin = false
           this.menus = []
           this.permissions = {
-          userManagement: false,
-          roleManagement: false,
-          menuManagement: false,
-          bookingManagement: false,
-          roomManagement: false,
-          orderManagement: false,
-          memberManagement: false,
-          reportManagement: false,
-          financialManagement: false,
-          operationLogManagement: false,
-          noticeManagement: false,
-          goodsManagement: false,
-          canAdd: false,
-          canEdit: false,
-          canDelete: false,
-          canAssignPermission: false,
-        }
+            userManagement: false,
+            roleManagement: false,
+            menuManagement: false,
+            bookingManagement: false,
+            roomManagement: false,
+            orderManagement: false,
+            memberManagement: false,
+            reportManagement: false,
+            financialManagement: false,
+            operationLogManagement: false,
+            noticeManagement: false,
+            goodsManagement: false,
+            canAdd: false,
+            canEdit: false,
+            canDelete: false,
+            canAssignPermission: false,
+          }
           localCache.removeCache(PRIMARY_TOKEN)
           localCache.removeCache('userId')
           localCache.removeCache('role')

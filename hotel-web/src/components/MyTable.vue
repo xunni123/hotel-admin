@@ -101,7 +101,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table'
 
 const currentIndex = ref<string>('')
 const originalVal = ref<any>(null)

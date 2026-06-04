@@ -14,25 +14,27 @@ import 'element-plus/es/components/notification/style/css'
 import '@/plugins/echart'
 import VChart from 'vue-echarts'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+//项目配置项
 import { loadConfig } from '@/config/index'
 
 async function initApp() {
   await loadConfig()
-  
+
   const app = createApp(App)
-  
+
   for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
   }
-  
+
   app.use(router)
-  
+
   const pinia = createPinia()
   pinia.use(piniaPluginPersistedstate)
   app.use(pinia)
-  
+
   app.component('v-chart', VChart)
-  
+
   app.mount('#app')
 }
 

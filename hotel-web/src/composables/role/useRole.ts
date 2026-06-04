@@ -1,6 +1,6 @@
 import { ref, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
-import type { TableApi } from '@/types'
+import type { TableApi } from '@/types/table'
 import { MessagePrompt } from '@/utils/message'
 import { updateRole, deleteRole } from '@/api/role'
 import { ElMessageBox } from 'element-plus'
@@ -16,6 +16,7 @@ interface UseTableOptions {
   cachePrefix?: string
 }
 
+//role
 export const useRole = () => {
   const addRef = ref<{ show: () => void }>()
 
@@ -29,6 +30,7 @@ export const useRole = () => {
   }
 }
 
+//table
 export const useTable = <T>(
   api: TableApi<T>,
   options: UseTableOptions = {},
@@ -109,10 +111,17 @@ export const useTable = <T>(
       }
       const res = await api.fetchList(query)
       if (res.code === undefined || res.code === 200) {
-        data.value = res.data
-
-        if (res.total !== undefined) {
-          total.value = res.total
+        // 处理两种返回格式：{ data: [...] } 或 { data: { list: [...], total: N } }
+        if (res.data && res.data.list !== undefined) {
+          // 后端分页格式
+          data.value = res.data.list || []
+          total.value = res.data.total || 0
+        } else {
+          // 旧格式或不分页格式
+          data.value = res.data || []
+          if (res.total !== undefined) {
+            total.value = res.total
+          }
         }
 
         saveCache()

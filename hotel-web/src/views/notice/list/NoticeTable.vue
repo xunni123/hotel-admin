@@ -9,6 +9,7 @@
             placeholder="请输入公告标题"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -120,7 +121,7 @@ import * as announcementApi from '@/api/announcement'
 import Card from '@/components/Card.vue'
 import { useRouter } from 'vue-router'
 import { MessagePrompt } from '@/utils/message'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table'
 import type { Announcement } from '@/api/announcement'
 import { useLoading } from '@/composables/useLoading'
 import { useLoginStore } from '@/store/login'

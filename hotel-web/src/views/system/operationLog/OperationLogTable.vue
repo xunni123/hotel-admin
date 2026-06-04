@@ -18,6 +18,7 @@
             placeholder="操作人/操作内容"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-select
             v-model="queryForm.module"

@@ -10,6 +10,7 @@
             placeholder="订单号/房间号/客人姓名"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-button
             type="primary"
@@ -84,7 +85,7 @@ import MyDialog from '@/components/MyDialog.vue'
 import OrderContent from './OrderContent.vue'
 import OrderDrawer from './OrderDrawer.vue'
 import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table.ts'
 import * as orderApi from '@/api/order'
 import { useTable } from '@/composables/role/useRole'
 import { MessagePrompt } from '@/utils/message'

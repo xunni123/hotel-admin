@@ -18,6 +18,7 @@
             placeholder="会员号/姓名/手机号"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-select
             v-model="queryForm.type"
@@ -84,6 +85,7 @@
         v-model:page="current"
         v-model:limit="pageSize"
         :total="total"
+        @query-change="handleQueryChange"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
@@ -179,24 +181,40 @@ import Pagination from '@/components/Pagination.vue'
 import Card from '@/components/Card.vue'
 import { ElMessageBox, ElForm } from 'element-plus'
 import { MessagePrompt } from '@/utils/message'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table'
 import * as consumeApi from '@/api/memberConsume'
 import type { MemberConsume } from '@/api/memberConsume'
-import { useLoading } from '@/composables/useLoading'
+import { useTable } from '@/composables/role/useRole'
 import { useLoginStore } from '@/store/login'
 
 const loginStore = useLoginStore()
-const { loading, startLoading, stopLoading } = useLoading(500)
-const allData = ref<any[]>([])
-const data = ref<any[]>([])
-const current = ref(1)
-const pageSize = ref(10)
-const total = ref(0)
 const dateRange = ref<string[]>([])
 const queryForm = reactive({
   keyword: '',
   type: '',
 })
+
+const {
+  loading,
+  startLoading,
+  stopLoading,
+  data,
+  current,
+  pageSize,
+  total,
+  handleCurrentChange,
+  handleSizeChange,
+  fetchList,
+  clearCache,
+} = useTable(
+  {
+    fetchList: (params?: any) => {
+      return consumeApi.getConsumeList(params)
+    },
+    delete: (id: string | number) => consumeApi.deleteConsume(id as number),
+  },
+  { cacheKey: 'consume_record_table' },
+)
 
 const dialogVisible = ref(false)
 const isEdit = ref(false)
@@ -267,26 +285,6 @@ const getConsumeTypeText = (type: string) => {
   return map[type] || type
 }
 
-const fetchList = async () => {
-  startLoading()
-  try {
-    const params: any = {}
-    if (queryForm.keyword) params.keyword = queryForm.keyword
-    if (queryForm.type) params.type = queryForm.type
-
-    const result = await consumeApi.getConsumeList(params)
-    if (result.code === 200) {
-      allData.value = result.data
-      data.value = result.data
-      total.value = data.value.length
-    }
-  } catch (error) {
-    MessagePrompt('获取数据失败', 'error')
-  } finally {
-    stopLoading()
-  }
-}
-
 const handleAdd = () => {
   isEdit.value = false
   Object.assign(formData, {
@@ -345,6 +343,34 @@ const handleDelete = (row: any) => {
     .catch(() => {})
 }
 
+const handleQuery = async () => {
+  const params = { ...queryForm }
+  startLoading()
+  try {
+    await fetchList({ page: 1, pageSize: pageSize.value, ...params })
+  } finally {
+    stopLoading()
+  }
+}
+
+const handleQueryChange = ({
+  page,
+  pageSize: size,
+}: {
+  page: number
+  pageSize: number
+}) => {
+  fetchList({ page, pageSize: size, ...queryForm })
+}
+
+const handleReset = () => {
+  queryForm.keyword = ''
+  queryForm.type = ''
+  dateRange.value = []
+  clearCache()
+  fetchList({ page: 1, pageSize: pageSize.value })
+}
+
 const handleSubmit = async () => {
   if (!formRef.value) return
   await formRef.value.validate(async (valid) => {
@@ -389,30 +415,8 @@ const handleSubmit = async () => {
   })
 }
 
-const handleQuery = () => {
-  fetchList()
-}
-
-const handleReset = () => {
-  queryForm.keyword = ''
-  queryForm.type = ''
-  dateRange.value = []
-  fetchList()
-  MessagePrompt('已重置', 'success')
-}
-
-const handleCurrentChange = (page: number) => {
-  current.value = page
-  fetchList()
-}
-
-const handleSizeChange = (size: number) => {
-  pageSize.value = size
-  fetchList()
-}
-
 onMounted(() => {
-  fetchList()
+  fetchList({ page: 1, pageSize: pageSize.value })
 })
 </script>
 

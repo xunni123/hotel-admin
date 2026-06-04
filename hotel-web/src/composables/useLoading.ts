@@ -11,11 +11,13 @@ export function useLoading(delay = 300) {
     }
   }
 
+  // 开始加载
   const startLoading = () => {
     clearTimer()
     loading.value = true
   }
 
+  //stop
   const stopLoading = () => {
     clearTimer()
     timer = setTimeout(() => {
@@ -23,6 +25,7 @@ export function useLoading(delay = 300) {
     }, delay)
   }
 
+  //当前loading状态
   const setLoading = async <T>(fn: () => Promise<T>) => {
     startLoading()
     try {

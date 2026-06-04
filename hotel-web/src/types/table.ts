@@ -1,6 +1,6 @@
 export interface Table {
-  prop: string
-  label: string
+  prop?: string
+  label?: string
   type?: string
   width?: string | number
   minWidth?: string | number

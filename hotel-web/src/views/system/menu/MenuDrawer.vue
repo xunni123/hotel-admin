@@ -98,7 +98,6 @@ const editForm = reactive({
   status: '1',
 })
 
-
 watch(
   () => props.visible,
   (newVal) => {
@@ -141,7 +140,6 @@ const buildTreeFromFlat = (menus: any[], parentId: number): any[] => {
 const handleTreeNodeClick = (node: any) => {
   editForm.parent_id = node.menu_id
 }
-
 
 // 表单提交
 const handleConfirm = async () => {

@@ -10,6 +10,7 @@
             placeholder="房间号/客人姓名/手机号"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-button
             type="primary"
@@ -100,7 +101,7 @@ import CheckinContent from './CheckinContent.vue'
 import CheckoutDialog from './CheckoutDialog.vue'
 import CheckinDrawer from './CheckinDrawer.vue'
 import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table.ts'
 import * as checkinApi from '@/api/room'
 import { useTable } from '@/composables/role/useRole'
 import { MessagePrompt } from '@/utils/message'

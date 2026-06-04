@@ -3,13 +3,9 @@
     v-model="dialogVisible"
     :title="isEdit ? '编辑记录' : '新增记录'"
     width="550px"
+    height="400px"
   >
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="rules"
-      label-width="100px"
-    >
+    <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px">
       <el-form-item label="类型" prop="type">
         <el-radio-group v-model="formData.type">
           <el-radio label="income">收入</el-radio>
@@ -91,6 +87,7 @@ const formData = reactive({
   operator: '',
 })
 
+//校验
 const rules = {
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
   amount: [{ required: true, message: '请输入金额', trigger: 'blur' }],
@@ -124,13 +121,14 @@ watch(
         operator: '',
       })
     }
-  }
+  },
 )
 
 watch(dialogVisible, (newVal) => {
   emit('update:visible', newVal)
 })
 
+//提交
 const handleSubmit = async () => {
   if (!formRef.value) return
   await formRef.value.validate(async (valid) => {

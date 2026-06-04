@@ -104,30 +104,7 @@ const asyncRoutes = [
       title: '菜单管理',
     },
   },
-  {
-    path: '/base/roomType',
-    name: 'RoomType',
-    component: () => import('@/views/base/roomType/index.vue'),
-    meta: {
-      title: '房型管理',
-    },
-  },
-  {
-    path: '/base/floor',
-    name: 'Floor',
-    component: () => import('@/views/base/floor/index.vue'),
-    meta: {
-      title: '楼层管理',
-    },
-  },
-  {
-    path: '/base/channel',
-    name: 'Channel',
-    component: () => import('@/views/base/channel/index.vue'),
-    meta: {
-      title: '渠道管理',
-    },
-  },
+
   {
     path: '/check/list',
     name: 'List',

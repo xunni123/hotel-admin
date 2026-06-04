@@ -18,13 +18,20 @@ export interface MemberConsume {
 export interface ConsumeQuery {
   keyword?: string
   type?: string
+  page?: number
+  limit?: number
 }
 
-export const getConsumeList = (params?: ConsumeQuery): Promise<{
+export interface ConsumeListResponse {
   code: number
   message: string
-  data: MemberConsume[]
-}> => {
+  data: {
+    list: MemberConsume[]
+    total: number
+  }
+}
+
+export const getConsumeList = (params?: ConsumeQuery): Promise<ConsumeListResponse> => {
   return service.get('/member-consume/list', { params })
 }
 

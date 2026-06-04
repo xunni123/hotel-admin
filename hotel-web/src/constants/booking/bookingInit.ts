@@ -1,4 +1,4 @@
-import type { Booking } from '@/types'
+import type { Booking } from '@/types/booking'
 
 export const getInitBookingForm = (): Booking => ({
   orderNo: '',

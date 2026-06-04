@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElForm } from 'element-plus'
+import { ElForm } from 'element-plus'
 import { createAnnouncement } from '@/api/announcement'
 import { useLoginStore } from '@/store/login'
 import { MessagePrompt } from '@/utils/message'
@@ -110,6 +110,7 @@ const handleSubmit = async () => {
   })
 }
 
+// 重置内容
 const handleReset = () => {
   formRef.value?.resetFields()
   formData.title = ''

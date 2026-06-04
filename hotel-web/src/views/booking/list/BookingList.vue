@@ -10,6 +10,7 @@
             placeholder="请输入手机号"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-button
             type="primary"
@@ -102,7 +103,7 @@ import BookingDialog from './BookingDialog.vue'
 import MyDialog from '@/components/MyDialog.vue'
 import DialogContent from './DialogContent.vue'
 import { onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table.ts'
 import * as bookingApi from '@/api/booking'
 import { useTable } from '@/composables/role/useRole'
 import { MessagePrompt } from '@/utils/message'

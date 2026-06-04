@@ -18,6 +18,7 @@
             placeholder="订单号/房间号/客人姓名"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-select
             v-model="queryForm.status"
@@ -218,8 +219,8 @@ import Card from '@/components/Card.vue'
 import { ElMessageBox, ElForm } from 'element-plus'
 import { MessagePrompt } from '@/utils/message'
 import { exportToExcel } from '@/utils/export'
-import type { Table } from '@/types'
-import dayjs from 'dayjs'
+import type { Table } from '@/types/table'
+
 import { useLoading } from '@/composables/useLoading'
 import { useLoginStore } from '@/store/login'
 import * as orderApi from '@/api/order'
@@ -259,6 +260,7 @@ const formData = reactive({
   remarks: '',
 })
 
+// 校验规则
 const rules = {
   orderNo: [{ required: true, message: '请输入订单号', trigger: 'blur' }],
   roomNumber: [{ required: true, message: '请输入房间号', trigger: 'blur' }],
@@ -317,6 +319,7 @@ const tableOptions: Table[] = [
   },
 ]
 
+// 状态类型
 const getStatusType = (status: string) => {
   const map: Record<string, string> = {
     completed: 'success',
@@ -325,6 +328,7 @@ const getStatusType = (status: string) => {
   return map[status] || 'info'
 }
 
+// 状态文本
 const getStatusText = (status: string) => {
   const map: Record<string, string> = {
     completed: '已完成',
@@ -333,6 +337,7 @@ const getStatusText = (status: string) => {
   return map[status] || status
 }
 
+// 支付状态方式
 const getPaymentMethodText = (method: string) => {
   const map: Record<string, string> = {
     wechat: '微信支付',
@@ -343,6 +348,7 @@ const getPaymentMethodText = (method: string) => {
   return map[method] || method
 }
 
+// 数据过滤
 const filterData = () => {
   let filtered = [...allData.value]
 

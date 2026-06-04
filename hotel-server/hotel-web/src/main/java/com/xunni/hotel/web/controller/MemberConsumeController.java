@@ -1,6 +1,8 @@
 package com.xunni.hotel.web.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xunni.hotel.common.result.Result;
 import com.xunni.hotel.entity.MemberConsume;
 import com.xunni.hotel.web.mapper.MemberConsumeMapper;
@@ -22,7 +24,9 @@ public class MemberConsumeController {
 
     @GetMapping("/list")
     public Result getConsumeList(@RequestParam(required = false) String keyword,
-                                 @RequestParam(required = false) String type) {
+                                 @RequestParam(required = false) String type,
+                                 @RequestParam(defaultValue = "1") Integer page,
+                                 @RequestParam(defaultValue = "10") Integer limit) {
         LambdaQueryWrapper<MemberConsume> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(keyword)) {
             queryWrapper.and(w -> w
@@ -36,8 +40,14 @@ public class MemberConsumeController {
             queryWrapper.eq(MemberConsume::getType, type);
         }
         queryWrapper.orderByDesc(MemberConsume::getCreateTime);
-        List<MemberConsume> list = memberConsumeMapper.selectList(queryWrapper);
-        return Result.success(list);
+        
+        Page<MemberConsume> pageParam = new Page<>(page, limit);
+        IPage<MemberConsume> pageResult = memberConsumeMapper.selectPage(pageParam, queryWrapper);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", pageResult.getRecords());
+        result.put("total", pageResult.getTotal());
+        return Result.success(result);
     }
 
     @GetMapping("/{id}")

@@ -7,40 +7,41 @@
 
       <!-- 查询表单 -->
       <div class="query-form-wrapper">
-        <el-form :inline="true" :model="queryForm">
-          <el-form-item label="类型">
-            <el-select
-              v-model="queryForm.type"
-              placeholder="全部类型"
-              style="width: 120px"
-            >
-              <el-option label="全部" value="" />
-              <el-option label="收入" value="income" />
-              <el-option label="支出" value="expense" />
-            </el-select>
-          </el-form-item>
+        <div class="query-filters">
+          <el-form :inline="true" :model="queryForm" class="filters-form">
+            <el-form-item label="类型">
+              <el-select
+                v-model="queryForm.type"
+                placeholder="全部类型"
+                style="width: 120px"
+              >
+                <el-option label="全部" value="" />
+                <el-option label="收入" value="income" />
+                <el-option label="支出" value="expense" />
+              </el-select>
+            </el-form-item>
 
-          <el-form-item label="支付方式">
-            <el-select
-              v-model="queryForm.paymentMethod"
-              placeholder="全部方式"
-              style="width: 140px"
-            >
-              <el-option label="全部" value="" />
-              <el-option label="微信支付" value="wechat" />
-              <el-option label="支付宝" value="alipay" />
-              <el-option label="现金" value="cash" />
-              <el-option label="银行卡" value="bank" />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item>
+            <el-form-item label="支付方式">
+              <el-select
+                v-model="queryForm.paymentMethod"
+                placeholder="全部方式"
+                style="width: 140px"
+              >
+                <el-option label="全部" value="" />
+                <el-option label="微信支付" value="wechat" />
+                <el-option label="支付宝" value="alipay" />
+                <el-option label="现金" value="cash" />
+                <el-option label="银行卡" value="bank" />
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <div class="query-actions">
             <el-button type="primary" @click="handleQuery">查询</el-button>
             <el-button @click="handleReset">重置</el-button>
             <el-button type="success" @click="handleAdd">新增记录</el-button>
             <el-button @click="handleExport">导出</el-button>
-          </el-form-item>
-        </el-form>
+          </div>
+        </div>
       </div>
 
       <h3 style="margin-top: 0; margin-bottom: 16px">收支明细</h3>
@@ -93,30 +94,6 @@
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
-
-      <div class="stats-cards">
-        <div class="stat-card">
-          <div class="stat-label">今日收入</div>
-          <div class="stat-value">¥{{ todayRevenue }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">今日订单数</div>
-          <div class="stat-value">{{ todayOrders }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">本月收入</div>
-          <div class="stat-value">¥{{ monthRevenue }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">本月订单数</div>
-          <div class="stat-value">{{ monthOrders }}</div>
-        </div>
-      </div>
-
-      <div class="charts-container">
-        <RevenueChart />
-        <PaymentChart />
-      </div>
     </Card>
 
     <!-- 新增/编辑弹窗 -->
@@ -141,8 +118,7 @@ import type { Table } from '@/types/table'
 import * as financialApi from '@/api/financialRecord'
 import { useLoading } from '@/composables/useLoading'
 import { useLoginStore } from '@/store/login'
-import RevenueChart from './RevenueChart.vue'
-import PaymentChart from './PaymentChart.vue'
+
 import FinancialDialog from './FinancialDialog.vue'
 
 const loginStore = useLoginStore()
@@ -202,6 +178,7 @@ const tableOptions: Table[] = [
   },
 ]
 
+//获取请求文本参数
 const getPaymentMethodText = (method: string) => {
   const map: Record<string, string> = {
     wechat: '微信支付',
@@ -212,6 +189,7 @@ const getPaymentMethodText = (method: string) => {
   return map[method] || method
 }
 
+// 过滤数据
 const filterData = () => {
   const start = (current.value - 1) * pageSize.value
   const end = start + pageSize.value
@@ -219,6 +197,7 @@ const filterData = () => {
   total.value = allData.value.length
 }
 
+// 请求列表
 const fetchList = async (queryParams?: any) => {
   startLoading()
   try {
@@ -380,6 +359,27 @@ onMounted(() => {
     padding: 16px;
     background: #f5f7fa;
     border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .query-filters {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .filters-form {
+    margin-top: 10px;
+    display: flex;
+    gap: 16px;
+  }
+
+  .query-actions {
+    display: flex;
+    gap: 8px;
   }
 
   :deep(.el-form-item) {

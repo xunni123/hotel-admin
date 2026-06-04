@@ -9,6 +9,7 @@
             placeholder="商品名称/编码"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-select
             v-model="queryForm.category"
@@ -171,7 +172,7 @@ import Pagination from '@/components/Pagination.vue'
 import Card from '@/components/Card.vue'
 import { ElMessageBox, ElForm } from 'element-plus'
 import { MessagePrompt } from '@/utils/message'
-import type { Table } from '@/types'
+import type { Table } from '@/types/table'
 import * as goodsApi from '@/api/goods'
 import type { Goods } from '@/api/goods'
 import { useLoading } from '@/composables/useLoading'

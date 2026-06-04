@@ -9,6 +9,7 @@
             placeholder="请输入用户名"
             clearable
             style="width: 200px"
+            @keyup.enter="handleQuery"
           />
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
