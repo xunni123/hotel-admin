@@ -44,11 +44,11 @@ export const useTabsStore = defineStore('tabs', {
         this.tabList = normalizeTabOrder(this.tabList)
         return
       }
-      
+
       if (this.tabList.length >= MAX_TABS) {
         this.tabList = this.tabList.slice(0, MAX_TABS - 1)
       }
-      
+
       this.tabList.push(tab)
       this.tabList = normalizeTabOrder(this.tabList)
     },

@@ -25,13 +25,14 @@ export default defineConfig({
       algorithm: 'gzip',
       ext: '.gz',
     }),
-    
+
   ],
   server: {
     host: '0.0.0.0',
     port: 3000,
     open: true,
     proxy: {
+      // 使用统一的 /api 前缀
       '/api': {
         target: 'http://localhost:8081',
         changeOrigin: true,
@@ -74,4 +75,3 @@ export default defineConfig({
     assetsDir: 'static/assets',
   },
 })
- 

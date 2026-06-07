@@ -130,7 +130,7 @@ export const useLoginStore = defineStore('login', {
           return true
         }
         return false
-      } catch {}
+      } catch { }
     },
   },
 })

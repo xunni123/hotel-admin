@@ -229,7 +229,7 @@ export const useTable = <T>(
           MessagePrompt('删除失败，请重试', 'error')
         }
       })
-      .catch(() => {})
+      .catch(() => { })
   }
 
   // 增
@@ -250,7 +250,7 @@ export const useTable = <T>(
       } else {
         MessagePrompt(msg, 'error')
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   return {

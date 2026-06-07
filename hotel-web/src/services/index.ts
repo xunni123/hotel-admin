@@ -17,7 +17,7 @@ let requestCount = 0
 
 
 const service = axios.create({
-  baseURL: '/api',
+  baseURL: '',
   timeout: TIME_OUT,
   headers: {
     'Content-Type': 'application/json',
@@ -75,8 +75,11 @@ const handle401 = () => {
 // 请求拦截器 
 service.interceptors.request.use(
   (config) => {
-    // 统一设置 baseURL
-    config.baseURL = getServerUrl()
+    // 设置 baseURL
+    const serverUrl = getServerUrl()
+    if (serverUrl) {
+      config.baseURL = serverUrl
+    }
 
     // 携带 token
     const token = localCache.getCache(PRIMARY_TOKEN)

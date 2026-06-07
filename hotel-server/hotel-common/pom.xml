@@ -34,6 +34,16 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Jackson依赖（用于敏感字段脱敏） -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
         <!-- JWT依赖 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
