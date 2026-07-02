@@ -15,6 +15,36 @@
 
 ---
 
+
+
+## 部分效果展示
+
+
+
+#### 登录页：
+
+![36cb1f84270ba718c5d13cf6d7943df2](C:\Users\26476\xwechat_files\wxid_awkhlo2ky25d22_dac9\temp\RWTemp\2026-07\36cb1f84270ba718c5d13cf6d7943df2.png)
+
+#### 首页：
+
+![e848a683b7efded1c6416526f08f96eb](C:\Users\26476\xwechat_files\wxid_awkhlo2ky25d22_dac9\temp\RWTemp\2026-07\e848a683b7efded1c6416526f08f96eb.png)
+
+#### 清洁管理：
+
+![image-20260703004250786](C:\Users\26476\AppData\Roaming\Typora\typora-user-images\image-20260703004250786.png)
+
+#### 角色权限管理：
+
+![image-20260703004311232](C:\Users\26476\AppData\Roaming\Typora\typora-user-images\image-20260703004311232.png)
+
+#### 财务：
+
+![image-20260703004326354](C:\Users\26476\AppData\Roaming\Typora\typora-user-images\image-20260703004326354.png)
+
+#### 房态：
+
+![image-20260703004346346](C:\Users\26476\AppData\Roaming\Typora\typora-user-images\image-20260703004346346.png)
+
 ## 技术栈
 
 ### 后端（Spring Boot + Maven 多模块）
@@ -383,3 +413,17 @@ hotel-admin/
         +-- services/                       远程与配置服务，预留
         +-- global/                         主键策略 全局标题
 ```
+
+
+
+##  试运行，求实战反馈
+
+本项目已具备基础功能，但未经大规模生产验证。如果你有酒店或 PMS 行业经验，恳请你从以下角度帮我“过一遍”：
+
+1. **操作流程**：从预订→入住→换房→离店→开票，是否存在断头路？
+2. **异常场景**：网络中断后重提交，是否会生成重复订单？
+3. **性能感受**：查询半年历史订单时，页面是否明显卡顿？
+
+你的行业经验比我写 10 年代码都珍贵，望不吝赐教。
+
+**所有有效意见（无论采纳与否），均会在鸣谢列表中署名致谢*
